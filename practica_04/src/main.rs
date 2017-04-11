@@ -14,7 +14,6 @@ fn combinator(n: i32, k: i32) -> f64 {
     if k < d_aux {
         while n_aux > d_aux {
             num = num * n_aux as f64;
-            // println!("{}", num);
             n_aux -= 1;
         }
         num
@@ -31,7 +30,7 @@ fn factorial(n: i32) -> u64 {
     if n <= 1 {
         return 1;
     }
-    // range(2, n + 1).product()
+
     let mut fact: u64 = 1;
     let mut x: u64 = 2;
 
@@ -45,10 +44,6 @@ fn factorial(n: i32) -> u64 {
 
 fn binomial_distrib(n: i32, k: i32, p: f32) -> f64 {
     let q = 1.0 - p;
-    // let fac_n = factorial(n) as f32;
-    // let fac_k = factorial(k) as f32;
-    // let fac_n_k = factorial(n - k) as f32;
-    // fac_n * p.powf(k as f32) * q.powf((n - k) as f32) / fac_k / fac_n_k
     combinator(n, k) * (p.powf(k as f32) * q.powf((n - k) as f32)) as f64
 }
 
@@ -70,7 +65,6 @@ fn do_calculation_a() {
            val_d,
            val_e)
             .expect("Couldn't write in file");
-    // write!(file, "{}", val_a).expect("Couldn't write in file");
 }
 
 fn process_file(p: &str, ctr: &mut [u32; 3]) {
@@ -118,7 +112,6 @@ fn do_calculation_b() {
 }
 
 fn main() {
-    // println!("Value: {}", binomial_distrib(20, 4, 0.3));
     do_calculation_a();
     do_calculation_b();
 }
