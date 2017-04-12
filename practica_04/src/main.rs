@@ -1,23 +1,24 @@
-extern crate num;
+// extern crate num;
 
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-use num::{BigInt, BigUint, Zero, One, FromPrimitive};
+// use num::{BigInt, BigUint, Zero, One, FromPrimitive};
 
 fn combinator(n: i32, k: i32) -> f64 {
-    let mut num: f64 = 1.0;
+    let mut num: f64;
     let mut n_aux = n;
-    let mut d_aux = n - k;
-    num = 1.0 / factorial(k) as f64;
+    let d_aux = n - k;
     if k < d_aux {
+        num = 1.0 / factorial(k) as f64;
         while n_aux > d_aux {
             num = num * n_aux as f64;
             n_aux -= 1;
         }
         num
     } else {
+        num = 1.0 / factorial(d_aux) as f64;
         while n_aux > k {
             num = num * n_aux as f64;
             n_aux -= 1;
