@@ -31,28 +31,20 @@ fn part_a() {
     let prob_pur = 0.68;
     let prob_pir = 0.32;
 
-    let val_a = geometric_distr(prob_pur, 3);
-    let val_b = geometric_distr(prob_pur, 5);
-    let val_c = geometric_distr(prob_pur, 7);
-    let val_d = geometric_distr(prob_pur, 9);
-    let val_e = geometric_distr(prob_pir, 4);
-    let val_f = geometric_distr(prob_pir, 6);
-    let val_g = geometric_distr(prob_pir, 8);
-    let val_h = geometric_distr(prob_pir, 10);
-
-
+    let input = vec![(prob_pur, 3),
+                     (prob_pur, 5),
+                     (prob_pur, 7),
+                     (prob_pur, 9),
+                     (prob_pir, 4),
+                     (prob_pir, 6),
+                     (prob_pir, 8),
+                     (prob_pir, 10)];
     let mut file = File::create("EPuma_Practica05_A.txt").expect("Couldn't open write file");
-    write!(file,
-           "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}",
-           val_a,
-           val_b,
-           val_c,
-           val_d,
-           val_e,
-           val_f,
-           val_g,
-           val_h)
-            .expect("Couldn't write in file");
+
+    for &(x, y) in input.iter() {
+        let val = geometric_distr(x, y);
+        write!(file, "{}\n", val).expect("Couldn't write in file");
+    }
 }
 
 fn part_b() {
@@ -63,13 +55,14 @@ fn part_b() {
     let prob_pur = counter[0] as f32 / counter[2] as f32;
     let prob_pir = counter[1] as f32 / counter[2] as f32;
 
-    let val_a = geometric_distr(prob_pur, 2);
-    let val_b = geometric_distr(prob_pur, 4);
-    let val_c = geometric_distr(prob_pir, 3);
-    let val_d = geometric_distr(prob_pir, 5);
+    let input = vec![(prob_pur, 2), (prob_pur, 4), (prob_pir, 3), (prob_pir, 5)];
 
     let mut file = File::create("EPuma_Practica05_B.txt").expect("Couldn't open write file");
-    write!(file, "{}\n{}\n{}\n{}", val_a, val_b, val_c, val_d).expect("Couldn't write in file");
+
+    for &(x, y) in input.iter() {
+        let val = geometric_distr(x, y);
+        write!(file, "{}\n", val).expect("Couldn't write in file");
+    }
 }
 
 fn main() {
