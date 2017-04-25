@@ -1,0 +1,6 @@
+[package]
+name = "practica_08"
+version = "0.1.0"
+authors = ["Elías Puma <elpumitaelias@gmail.com>"]
+
+[dependencies]
