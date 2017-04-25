@@ -12,7 +12,7 @@ fn process_file(p: &str) -> (f32, f32, f32) {
     let mut file = File::open(&path).expect("Unable to open");
 
     let mut s = String::new();
-    file.read_to_string(&mut s).expect("not able to read");
+    file.read_to_string(&mut s).expect("Not able to read");
 
     let mut ctr_0 = 0.0;
     let mut ctr_1 = 0.0;
@@ -41,8 +41,8 @@ fn part_a() {
                      (prob_pir, 6),
                      (prob_pir, 8),
                      (prob_pir, 10)];
-    let mut file = File::create("EPuma_Practica05_A.txt").expect("Couldn't open write file");
 
+    let mut file = File::create("EPuma_Practica05_A.txt").expect("Couldn't open write file");
     for &(x, y) in input.iter() {
         write!(file, "{val}\n", val = geometric_distr(x, y)).expect("Couldn't write in file");
     }
@@ -65,7 +65,9 @@ fn part_b() {
 }
 
 fn main() {
-    println!("Hello, world!");
+    println!("Running Part A");
     part_a();
+    println!("Running Part B");
     part_b();
+    println!("Done ;)");
 }
