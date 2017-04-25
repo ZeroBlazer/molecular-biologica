@@ -1,4 +1,4 @@
-use std::cmp::min;
+use std::cmp::max;
 
 #[derive(Debug)]
 enum Aminoacid {
@@ -36,7 +36,11 @@ fn get_score(a: char, b: char) -> i32 {
 
 fn print_matrix(sec_1: &str, sec_2: &str, mtrx: Vec<Vec<i32>>) {
     for row in mtrx.into_iter() {
-        println!("{:?}", row);
+        // println!("{:?}", row);
+        for elem in row.into_iter() {
+            print!("{}\t", elem);
+        }
+        println!("");
     }
 }
 
@@ -63,26 +67,34 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
     let mut diag_val;
     let mut left_val;
     let mut uppr_val;
-    let mut score;
 
-    
-
-    for i in 1..len_2 {
-        let char_1: char = String::from(sec_2).chars().collect()[i];
-        for j in 1..len_1 {
-            score = 10;
+    let mut i = 1;
+    for c2 in sec_2.chars() {
+        let mut j = 1;
+        for c1 in sec_1.chars() {
+            let score = get_score(c2, c1);
             diag_val = score + matrix[i - 1][j - 1];
-            left_val = score + matrix[i - 1][j];
-            uppr_val = score + matrix[i][j - 1];
-            matrix[i][j] = min(diag_val, min(left_val, uppr_val));
+            left_val = -5 + matrix[i][j - 1];
+            uppr_val = -5 + matrix[i - 1][j];
+            matrix[i][j] = max(diag_val, max(left_val, uppr_val));
+            // println!("[{}][{}]: {}\td: {}\tl: {}\tu: {}\t->\tval: {}",
+            //          i,
+            //          j,
+            //          score,
+            //          diag_val,
+            //          left_val,
+            //          uppr_val,
+            //          matrix[i][j]);
+            j += 1;
         }
+        i += 1;
     }
 
-    println!("Dims: {} x {}", len_1, len_2);
     print_matrix(sec_1, sec_2, matrix);
 }
 
 fn main() {
     align_secuence("ACCGTCTT", "CGTCTT");
+    // align_secuence("ACC", "CGT");
     // println!("Hello, world!");
 }
