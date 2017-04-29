@@ -9,6 +9,12 @@ enum Aminoacid {
     Undef,
 }
 
+macro_rules! char_at {
+    ($str: ident, $index: ident) => {
+        &$str[$index..$index+1]
+    }
+}
+
 static SCORES: [[i32; 4]; 4] = [[10, -1, -3, -4],
                                 [-1, 7, -5, -3],
                                 [-3, -5, 9, 0],
@@ -35,12 +41,25 @@ fn get_score(a: char, b: char) -> i32 {
 }
 
 fn print_matrix(sec_1: &str, sec_2: &str, mtrx: Vec<Vec<i32>>) {
-    for row in mtrx.into_iter() {
-        // println!("{:?}", row);
-        for elem in row.into_iter() {
+    print!("\t\t");
+    for chr in sec_1.chars() {
+        print!(" {}\t", chr);
+    }
+    print!("\n\t");
+
+    for elem in mtrx[0].iter() {
+        print!("{}\t", elem);
+    }
+    println!("");
+
+    let mut i: usize = 1;
+    for chr in sec_2.chars() {
+        print!("{}\t", chr);
+        for elem in mtrx[i].iter() {
             print!("{}\t", elem);
         }
         println!("");
+        i += 1;
     }
 }
 
@@ -77,24 +96,42 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
             left_val = -5 + matrix[i][j - 1];
             uppr_val = -5 + matrix[i - 1][j];
             matrix[i][j] = max(diag_val, max(left_val, uppr_val));
-            // println!("[{}][{}]: {}\td: {}\tl: {}\tu: {}\t->\tval: {}",
-            //          i,
-            //          j,
-            //          score,
-            //          diag_val,
-            //          left_val,
-            //          uppr_val,
-            //          matrix[i][j]);
             j += 1;
         }
         i += 1;
     }
 
+    let mut i = sec_1.len();
+    let mut j = sec_2.len();
+    let mut alignment = String::new();
+
+    while i > 0 || j > 0 {
+        diag_val = matrix[j - 1][i - 1];
+        left_val = matrix[j - 1][i];
+        uppr_val = matrix[j][i - 1];
+
+        println!("{}\t{}\t{}", diag_val, left_val, uppr_val);
+
+        if diag_val >= left_val && diag_val >= uppr_val {
+                j -= 1;
+                i-= 1;
+                alignment += char_at!(sec_2, j);
+        } else if left_val > uppr_val {
+                j -= 1;
+                alignment += "_";
+            } else {
+                i -= 1;
+                alignment += "_";
+            }
+    }
+    
+    println!("\nAlignment: {}", alignment.chars().rev().collect::<String>());
+    println!("\nMatrix:");
     print_matrix(sec_1, sec_2, matrix);
 }
 
 fn main() {
     align_secuence("ACCGTCTT", "CGTCTT");
-    // align_secuence("ACC", "CGT");
+    // align_secuence("ACTTAG", "ACTTC");
     // println!("Hello, world!");
 }
