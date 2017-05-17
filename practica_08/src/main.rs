@@ -14,7 +14,6 @@ enum Direction {
     Diagonal,
     Up,
     Left,
-    Undef,
 }
 
 use Direction::*;
@@ -44,13 +43,36 @@ fn get_score(a: char, b: char) -> i32 {
     SCORES[b_pos as usize][a_pos as usize]
 }
 
-fn print_matrix(mtrx: &Vec<Vec<i32>>) {
-    for row in mtrx.into_iter() {
-        // println!("{:?}", row);
-        for elem in row.into_iter() {
+// fn print_matrix(mtrx: &Vec<Vec<i32>>) {
+//     for row in mtrx.into_iter() {
+//         // println!("{:?}", row);
+//         for elem in row.into_iter() {
+//             print!("{}\t", elem);
+//         }
+//         println!("");
+//     }
+// }
+
+fn print_matrix(sec_1: &str, sec_2: &str, mtrx: &Vec<Vec<i32>>) {
+    print!("\t\t");
+    for chr in sec_1.chars() {
+        print!(" {}\t", chr);
+    }
+    print!("\n\t");
+
+    for elem in mtrx[0].iter() {
+        print!("{}\t", elem);
+    }
+    println!("");
+
+    let mut i: usize = 1;
+    for chr in sec_2.chars() {
+        print!("{}\t", chr);
+        for elem in mtrx[i].iter() {
             print!("{}\t", elem);
         }
         println!("");
+        i += 1;
     }
 }
 
@@ -93,21 +115,17 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
         i += 1;
     }
 
-    print_matrix(&matrix);
+    print_matrix(sec_1, sec_2, &matrix);
 
-    /************** Alignment **************/
+    /************** Alignment **************/ {
     let mut align = String::new();
 
     i = sec_2.len();
     j = sec_1.len();
 
-    // println!("{}", sec_2.as_bytes()[i] as char);
-    // println!("{}", sec_1.as_bytes()[j] as char);
-
     let mut direct = Diagonal;
     let mut greater;
     loop {
-        print!("i: {} j: {} -> ", i, j);
         if i == 0 || j == 0 {
             break;
         }
@@ -116,8 +134,6 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
         left_val = matrix[i][j - 1];
         uppr_val = matrix[i - 1][j];
         greater = max(diag_val, max(left_val, uppr_val));
-
-        println!("{}", greater);
 
         match direct {
             Diagonal => {
@@ -129,7 +145,6 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
             Left => {
                 align.push('_');
             }
-            Undef => {}
         }
 
         if greater == diag_val {
@@ -144,37 +159,57 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
             i -= 1;
         }
     }
-    // loop {
-    //     if i == 0 || j == 0 {
-    //         break;
-    //     }
+    
+    println!("\nAlignment: {}", align.chars().rev().collect::<String>()); }
+    /****************************************/
 
-    //     diag_val = matrix[i - 1][j - 1];
-    //     left_val = matrix[i][j - 1];
-    //     uppr_val = matrix[i - 1][j];
-    //     greater = max(diag_val, max(left_val, uppr_val));
+    /************** Alignment **************/ {
+    let mut align = String::new();
 
-    //     println!("{}", greater);
+    i = sec_2.len();
+    j = sec_1.len();
 
-    //     if greater == diag_val {
-    //         println!("diag");
-    //         align.push(sec_2.as_bytes()[i - 1] as char);
-    //         if i > 0 {  i -= 1; }
-    //         if j > 0 {  j -= 1; }
-    //     } else if greater == left_val {
-    //         println!("left");
-    //         align.push('_');
-    //         if i > 0 {  i -= 1; }
-    //     } else if greater == uppr_val {
-    //         println!("up");
-    //         align.push('_');
-    //         if j > 0 {  j -= 1; }
-    //     }
-    // }
-    println!("\nAlignment: {}", align.chars().rev().collect::<String>());
-    /**************************************/
+    let mut direct = Diagonal;
+    let mut greater;
+    loop {
+        if i == 0 || j == 0 {
+            break;
+        }
+
+        diag_val = matrix[i - 1][j - 1];
+        left_val = matrix[i][j - 1];
+        uppr_val = matrix[i - 1][j];
+        greater = max(diag_val, max(left_val, uppr_val));
+
+        match direct {
+            Diagonal => {
+                align.push(sec_2.as_bytes()[i - 1] as char);
+            }
+            Up => {
+                align.push('_');
+            }
+            Left => {
+                align.push('_');
+            }
+        }
+
+        if greater == left_val {
+            direct = Left;
+            j -= 1;
+        } else if greater == diag_val {
+            direct = Diagonal;
+            i -= 1;
+            j -= 1;
+        } else if greater == uppr_val {
+            direct = Up;
+            i -= 1;
+        }
+    }
+    
+    println!("Alignment: {}", align.chars().rev().collect::<String>()); }
+    /****************************************/
 }
 
 fn main() {
-    align_secuence("ACCGTCTT", "CGTCTT");
+    align_secuence("ACCGTCTT", "ACGTCTT");
 }
