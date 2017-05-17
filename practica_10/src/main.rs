@@ -55,17 +55,7 @@ fn expand_words(align1: &mut String,
         *indx1_f += 1;
         *indx2_f += 1;
     }
-
-    // let mut begin = true;
-    // let mut end = true;
-
-    // begin = if *indx1_i != 0 && *indx2_i != 0 {false} else {true};
-    // end = if *indx1_f < sec_1.len() && *indx2_f < sec_2.len() {
-    //     false
-    // } else {
-    //     true
-    // };
-    // (begin, end)
+    
     (!(*indx1_i != 0 && *indx2_i != 0), !(*indx1_f < sec_1.len() && *indx2_f < sec_2.len()))
 }
 
@@ -123,26 +113,15 @@ fn align_secuence(sec_1: &str,
     let mut algn1 = align1.clone();
     let mut algn2 = align2.clone();
 
-    println!("{}, {}", algn1, algn2);
-
     while {
         let hsp = get_hsp(&align1, &align2, match_scr, mism_scr);
-        println!("{}, {}", align1, align2);
-        println!("{} -> {}", hsp, hsp > u);
-        println!("");
+        // println!("{}, {}\n{} -> {}\n", align1, align2, hsp, hsp > u);
         hsp > u
     } {
         algn1 = align1.clone();
         algn2 = align2.clone();
 
-        let (a, b) = expand_words(&mut align1,
-                                  &mut align2,
-                                  &sec_1,
-                                  &sec_2,
-                                  &mut indx1_i,
-                                  &mut indx1_f,
-                                  &mut indx2_i,
-                                  &mut indx2_f);
+        let (a, b) = expand_words(&mut align1, &mut align2, &sec_1, &sec_2, &mut indx1_i, &mut indx1_f, &mut indx2_i, &mut indx2_f);
             
         if a && b {
             algn1 = align1.clone();
@@ -155,5 +134,5 @@ fn align_secuence(sec_1: &str,
 }
 
 fn main() {
-    align_secuence("TCAGATCACTC", "GTATCGCTC", 3, 1, -2, 3, -3);
+    align_secuence("TCAGATCACGG", "GTATCGCTC", 3, 1, -2, 3, -3);
 }
