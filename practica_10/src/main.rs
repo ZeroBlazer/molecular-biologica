@@ -76,7 +76,7 @@ fn print_alignment(align1: String, align2: String) {
         }
     }
     
-    println!(">{}\n>{}", algn1, algn2);
+    println!("S1> {}\nS2> {}", algn1, algn2);
 }
 
 fn align_secuence(sec_1: &str,
