@@ -75,6 +75,17 @@ fn print_alignment(align1: String, align2: String) {
             algn2.push(c2);
         }
     }
+
+    loop {
+        let c1 = algn1.pop().unwrap();
+        let c2 = algn2.pop().unwrap();
+
+        if c1 == c2 {
+            algn1.push(c1);
+            algn2.push(c2);
+            break;
+        }
+    }
     
     println!("S1> {}\nS2> {}", algn1, algn2);
 }
@@ -134,5 +145,6 @@ fn align_secuence(sec_1: &str,
 }
 
 fn main() {
-    align_secuence("TCAGATCACGG", "GTATCGCTC", 3, 1, -2, 3, -3);
+    align_secuence("TCAGATCAACT", "GTATCGAAA", 3, 1, -2, 3, -5);
+    // align_secuence("TCAGATCACTT", "GTATCGCTC", 3, 1, -2, 3, -5);
 }
