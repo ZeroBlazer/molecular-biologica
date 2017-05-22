@@ -12,17 +12,17 @@ fn get_score(a: char, b: char) -> i32 {
     if a == b { 1 } else { -1 }
 }
 
-fn print_matrix(mtrx: &Vec<Vec<i32>>) {
+fn print_matrix(mtrx: &Vec<Vec<(i32, String, String)>>) {
     for row in mtrx.iter() {
         for elem in row.iter() {
-            print!("{}\t", elem);
+            print!("{}\t", elem.0);
         }
         println!("");
         // println!("{:?}", row);
     }
 }
 
-fn align_secuence(sec_1: &str, sec_2: &str) -> i32 {
+fn align_secuence(sec_1: &str, sec_2: &str) -> (i32, String, String) {
     let len_1 = sec_1.len() + 1;
     let len_2 = sec_2.len() + 1;
 
@@ -47,7 +47,7 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> i32 {
     let mut uppr_val;
 
     let mut i = 1;
-    let mut j = 1;
+    let mut j;
     for c2 in sec_2.chars() {
         j = 1;
         for c1 in sec_1.chars() {
@@ -62,7 +62,8 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> i32 {
     }
 
     /************** Alignment **************/
-    let mut align = String::new();
+    let mut align1 = String::new();
+    let mut align2 = String::new();
 
     i = sec_2.len();
     j = sec_1.len();
@@ -81,13 +82,16 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> i32 {
 
         match direct {
             Diagonal => {
-                align.push(sec_2.as_bytes()[i - 1] as char);
+                align1.push(sec_1.as_bytes()[j - 1] as char);
+                align2.push(sec_2.as_bytes()[i - 1] as char);
             }
             Up => {
-                align.push('_');
+                align1.push('_');
+                align2.push(sec_2.as_bytes()[i - 1] as char);
             }
             Left => {
-                align.push('_');
+                align1.push(sec_1.as_bytes()[j - 1] as char);
+                align2.push('_');
             }
         }
 
@@ -103,48 +107,70 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> i32 {
             i -= 1;
         }
     }
-
-    println!("\nAlignment: {}", align.chars().rev().collect::<String>());
     /****************************************/
 
-    matrix[len_2 - 1][len_1 - 1]
+    (matrix[len_2 - 1][len_1 - 1],
+     align2.chars().rev().collect::<String>(),
+     align1.chars().rev().collect::<String>())
 }
 
 fn star_alignment(seqs: Vec<&str>) {
     let len = seqs.len();
-    let mut matrix: Vec<Vec<i32>> = vec![vec![0; len]; len];
-    let mut D = vec![0; len];
+    let mut final_seqs: Vec<(String, String)> = vec![(String::new(), String::new()); len];
+    {
+        let mut matrix: Vec<Vec<(i32, String, String)>> =
+            vec![vec![(0, String::new(), String::new()); len]; len];
+        let mut d = vec![0; len];
 
-    let mut max_pos = 0;
-    for j in 0..len {
-        let mut i = j + 1;
-        while i < len {
-            let val = align_secuence(seqs[i], seqs[j]);
-            matrix[j][i] = val;
-            matrix[i][j] = val;
-            i += 1;
+        let mut max_pos = 0;
+        for j in 0..len {
+            let mut i = j + 1;
+            while i < len {
+                let val = align_secuence(seqs[i], seqs[j]);
+                matrix[j][i] = val;
+                matrix[i][j].0 = matrix[j][i].0;
+                matrix[i][j].1 = matrix[j][i].2.clone();
+                matrix[i][j].2 = matrix[j][i].1.clone();
+                i += 1;
+            }
+
+            for i in 0..len {
+                d[j] += matrix[j][i].0;
+            }
+
+            if d[j] > d[max_pos] {
+                max_pos = j;
+            }
         }
-        // for i in 0..len {
-        //     matrix[j][i] = if i != j {
-        //         align_secuence(seqs[i], seqs[j])
-        //     } else {
-        //         0
-        //     };
-        // }
+        matrix[max_pos][max_pos].1 = String::from(seqs[max_pos]);
+        matrix[max_pos][max_pos].2 = String::from(seqs[max_pos]);
+
+        print_matrix(&matrix);
 
         for i in 0..len {
-            D[j] += matrix[j][i];
-        }
-
-        if D[j] > D[max_pos] {
-            max_pos = j;
+            final_seqs[i].0 = matrix[max_pos][i].1.clone();
+            final_seqs[i].1 = matrix[max_pos][i].2.clone();
         }
     }
 
-    print_matrix(&matrix);
-    println!("{:?} -> {}", D, max_pos);
+    for i in 1..len {
+        if let Some(offset) = final_seqs[i].0.find('_') {
+            println!("{}> [{}]", i, offset);
+            for j in 0..len {
+                if j != i {
+                    let t: String = final_seqs[j].1.split_off(offset);
+                    println!("{} -> {}", final_seqs[i].1, t);
+                    final_seqs[j].1.push_str("_");
+                    final_seqs[j].1 += t.as_ref();
+                }
+            }
+        }
+    }
 
-
+    for i in 0..len {
+        println!("S{}> {}", i+1, final_seqs[i].1);
+    }
+    // println!("{:?}", final_seqs);
 }
 
 fn main() {
