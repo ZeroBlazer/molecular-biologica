@@ -126,6 +126,7 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> (String, String) {
 fn tps_alignment(seqs: Vec<&str>) {
     let len = seqs.len();
 
+    let m
     for i in 0..len {
         let mut j = i + 1;
         while j < len {
