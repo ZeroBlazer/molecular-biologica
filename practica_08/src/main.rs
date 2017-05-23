@@ -211,5 +211,6 @@ fn align_secuence(sec_1: &str, sec_2: &str) {
 }
 
 fn main() {
-    align_secuence("ACCGTCTT", "ACGTCTT");
+    // align_secuence("ACCGTCTT", "ACGTCTT");
+    align_secuence("GATGTGCCG", "CCTGTAGG");
 }

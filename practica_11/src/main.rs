@@ -22,6 +22,49 @@ fn print_matrix(mtrx: &Vec<Vec<(i32, String, String)>>) {
     }
 }
 
+fn print_matrix2(sec_1: &str, sec_2: &str, mtrx: &Vec<Vec<i32>>) {
+    print!("\t\t");
+    for chr in sec_1.chars() {
+        print!(" {}\t", chr);
+    }
+    print!("\n\t");
+
+    for elem in mtrx[0].iter() {
+        print!("{}\t", elem);
+    }
+    println!("");
+
+    let mut i: usize = 1;
+    for chr in sec_2.chars() {
+        print!("{}\t", chr);
+        for elem in mtrx[i].iter() {
+            print!("{}\t", elem);
+        }
+        println!("");
+        i += 1;
+    }
+}
+
+fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i32 {
+    let mut hsp = 0;
+
+    let mut chars2 = w2.chars();
+    for c1 in w1.chars() {
+        let c2 = chars2.next().unwrap();
+        hsp += if c1 == c2 {
+            match_scr
+        } else if c1 == '_' {
+            gap_scr
+        } else if c2 == '_' {
+            gap_scr
+        } else {
+            mism_scr
+        }
+    }
+
+    hsp
+}
+
 fn align_secuence(sec_1: &str, sec_2: &str) -> (i32, String, String) {
     let len_1 = sec_1.len() + 1;
     let len_2 = sec_2.len() + 1;
@@ -40,7 +83,7 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> (i32, String, String) {
         matrix[i][0] = init_val;
         init_val -= 5;
     }
-    /**************************************/
+    /******************************print_matrix(sec_1, sec_2, &matrix);********/
 
     let mut diag_val;
     let mut left_val;
@@ -60,6 +103,9 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> (i32, String, String) {
         }
         i += 1;
     }
+
+    println!("");
+    print_matrix2(sec_1, sec_2, &matrix);
 
     /************** Alignment **************/
     let mut align1 = String::new();
@@ -109,9 +155,10 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> (i32, String, String) {
     }
     /****************************************/
 
-    (matrix[len_2 - 1][len_1 - 1],
-     align2.chars().rev().collect::<String>(),
-     align1.chars().rev().collect::<String>())
+    align1 = align1.chars().rev().collect::<String>();
+    align2 = align2.chars().rev().collect::<String>();
+
+    (get_hsp(&align1, &align2, 1, -1, -2), align2, align1)
 }
 
 fn star_alignment(seqs: Vec<&str>) {
@@ -153,31 +200,38 @@ fn star_alignment(seqs: Vec<&str>) {
         }
     }
 
+    // println!("{:?}", final_seqs);
+
+    let mut aux = 0;
     for i in 1..len {
         if let Some(offset) = final_seqs[i].0.find('_') {
-            println!("{}> [{}]", i, offset);
+            // println!("{}> [{}]", i, offset);
             for j in 0..len {
                 if j != i {
-                    let t: String = final_seqs[j].1.split_off(offset);
-                    println!("{} -> {}", final_seqs[i].1, t);
+                    let t: String = final_seqs[j].1.split_off(offset + aux);
+                    // println!("{} -> {}", final_seqs[i].1, t);
                     final_seqs[j].1.push_str("_");
                     final_seqs[j].1 += t.as_ref();
                 }
             }
+            aux += 1;
         }
     }
 
+    println!("");
     for i in 0..len {
-        println!("S{}> {}", i+1, final_seqs[i].1);
+        println!("S{}> {}", i + 1, final_seqs[i].1);
     }
     // println!("{:?}", final_seqs);
 }
 
 fn main() {
-    let seqs: Vec<&str> = vec!["CCTGCTGCAG",
-                               "GATGTGCCG",
-                               "GATGTGCAG",
-                               "CCGCTAGCAG",
-                               "CCTGTAGG"];
-    star_alignment(seqs);
+    // let seqs: Vec<&str> = vec!["CCTGCTGCAG",
+    //                            "GATGTGCCG",
+    //                            "GATGTGCAG",
+    //                            "CCGCTAGCAG",
+    //                            "CCTGTAGG"];
+    // star_alignment(seqs);
+
+    println!("{:?}", align_secuence("GATGTGCCG", "CCTGTAGG"));
 }
