@@ -30,7 +30,7 @@ fn get_score(a: char, b: char) -> i32 {
     if a == b { 1 } else { -1 }
 }
 
-fn print_matrix(seq_vec: Vec<String>, seq: String, mtrx: &Vec<Vec<i32>>) {
+fn print_matrix(seq_vec: &Vec<String>, seq: &String, mtrx: &Vec<Vec<i32>>) {
     for sec in seq_vec.iter() {
         print!("\t");
         for chr in sec.chars() {
@@ -206,7 +206,6 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
             left_val = {
                 let mut sum = 0;
                 for _ in seq_vec.iter() {
-                    // sum += score(seq.chars().nth(i).unwrap(), sec.chars().nth(j - 1).unwrap());
                     sum += score(seq.chars().nth(i).unwrap(), '_');
                 }
                 sum += matrix[i][j - 1];
@@ -216,7 +215,6 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
             uppr_val = {
                 let mut sum = 0;
                 for sec in seq_vec.iter() {
-                    // sum += score(seq.chars().nth(i - 1).unwrap(), sec.chars().nth(j).unwrap());
                     sum += score('_', sec.chars().nth(j).unwrap());
                 }
                 sum += matrix[i - 1][j];
@@ -227,7 +225,17 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
         }
     }
 
-    print_matrix(seq_vec, seq, &matrix);
+    print_matrix(&seq_vec, &seq, &matrix);
+
+    /********* Restore sequences **********/
+    seq.remove(0);
+
+    for sec in seq_vec.iter_mut() {
+        sec.remove(0);
+    }
+    /**************************************/
+
+    
 }
 
 fn tps_alignment(seqs: Vec<&str>) {
