@@ -30,6 +30,29 @@ fn get_score(a: char, b: char) -> i32 {
     if a == b { 1 } else { -1 }
 }
 
+// fn print_matrix(seq_vec: &Vec<String>, seq: &String, mtrx: &Vec<Vec<i32>>) {
+//     print!("\t\t");
+//     for chr in sec_1.chars() {
+//         print!(" {}\t", chr);
+//     }
+//     print!("\n\t");
+
+//     for elem in mtrx[0].iter() {
+//         print!("{}\t", elem);
+//     }
+//     println!("");
+
+//     let mut i: usize = 1;
+//     for chr in sec_2.chars() {
+//         print!("{}\t", chr);
+//         for elem in mtrx[i].iter() {
+//             print!("{}\t", elem);
+//         }
+//         println!("");
+//         i += 1;
+//     }
+// }
+
 fn align_secuence(sec_1: &str, sec_2: &str) -> (String, String) {
     let len_1 = sec_1.len() + 1;
     let len_2 = sec_2.len() + 1;
@@ -123,23 +146,52 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> (String, String) {
     (align2, align1)
 }
 
+fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
+    /********* Initialize sequences **********/
+    seq = String::from("_") + seq.as_ref();
+
+    for sec in seq_vec.iter_mut() {
+        *sec = String::from("_") + sec.as_ref();
+    }
+    /********* Initialize matrix **********/
+    let len_1 = seq_vec[0].len();
+    let len_2 = seq.len();
+
+    let mut matrix: Vec<Vec<i32>> = vec![vec![0; len_1]; len_2];
+    /**************************************/
+
+    println!("{}", seq);
+    println!("{:?}", seq_vec);
+}
+
 fn tps_alignment(seqs: Vec<&str>) {
     let len = seqs.len();
 
-    let m
+    let mut my_vec = Vec::new();
     for i in 0..len {
         let mut j = i + 1;
         while j < len {
             let aligns = align_secuence(seqs[i], seqs[j]);
-            println!("{}", get_hsp(&aligns.0, &aligns.1, 0, 3, 2));
+            my_vec.push((get_hsp(&aligns.0, &aligns.1, 0, 3, 2), i, j, aligns.0, aligns.1));
             j += 1;
         }
     }
+
+    my_vec.sort_by(|a, b| a.0.cmp(&b.0));
+    // println!("{:?}", my_vec);
+
+    let mut first = Vec::new();
+    first.push(my_vec[0].4.clone());
+    first.push(my_vec[0].3.clone());
+    let second = my_vec[2].3.clone();
+
+    align_seqs(first, second);
 }
 
 fn main() {
     let seqs: Vec<&str> = vec!["ACTCAT",
                                "AGTCAT",
                                "ACGTCCT"];
+
     tps_alignment(seqs);
 }
