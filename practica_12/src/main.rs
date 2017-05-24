@@ -6,7 +6,7 @@ enum Direction {
 }
 
 use Direction::*;
-use std::cmp::max;
+use std::cmp::{max, min};
 
 fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i32 {
     let mut hsp = 0;
@@ -30,28 +30,30 @@ fn get_score(a: char, b: char) -> i32 {
     if a == b { 1 } else { -1 }
 }
 
-// fn print_matrix(seq_vec: &Vec<String>, seq: &String, mtrx: &Vec<Vec<i32>>) {
-//     print!("\t\t");
-//     for chr in sec_1.chars() {
-//         print!(" {}\t", chr);
-//     }
-//     print!("\n\t");
+fn print_matrix(seq_vec: Vec<String>, seq: String, mtrx: &Vec<Vec<i32>>) {
+    for sec in seq_vec.iter() {
+        print!("\t");
+        for chr in sec.chars() {
+            print!("{}\t", chr);
+        }
+        println!("");
+    }
+    // print!("\n\t");
 
-//     for elem in mtrx[0].iter() {
-//         print!("{}\t", elem);
-//     }
-//     println!("");
+    // for elem left_valin mtrx[0].iter() {
+    //     print!("{}\t", elem);
+    // }
 
-//     let mut i: usize = 1;
-//     for chr in sec_2.chars() {
-//         print!("{}\t", chr);
-//         for elem in mtrx[i].iter() {
-//             print!("{}\t", elem);
-//         }
-//         println!("");
-//         i += 1;
-//     }
-// }
+    let mut i: usize = 0;
+    for chr in seq.chars() {
+        print!("{}\t", chr);
+        for elem in mtrx[i].iter() {
+            print!("{}\t", elem);
+        }
+        println!("");
+        i += 1;
+    }
+}
 
 fn align_secuence(sec_1: &str, sec_2: &str) -> (String, String) {
     let len_1 = sec_1.len() + 1;
@@ -153,15 +155,79 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
     for sec in seq_vec.iter_mut() {
         *sec = String::from("_") + sec.as_ref();
     }
+    /********* score function **********/
+    fn score(a: char, b: char) -> i32 {
+        if a == b {
+            0
+        } else if a == '_' || b == '_' {
+            2
+        } else {
+            3
+        }
+    }
     /********* Initialize matrix **********/
     let len_1 = seq_vec[0].len();
     let len_2 = seq.len();
 
     let mut matrix: Vec<Vec<i32>> = vec![vec![0; len_1]; len_2];
+
+    let mut val = 0;
+    for j in 1..len_1 {
+        for sec in seq_vec.iter() {
+            val += score(seq.chars().nth(0).unwrap(), sec.chars().nth(j).unwrap());
+        }
+        matrix[0][j] = val;
+    }
+
+    val = 0;
+    for i in 1..len_2 {
+        for sec in seq_vec.iter() {
+            val += score(seq.chars().nth(i).unwrap(), sec.chars().nth(0).unwrap());
+        }
+        matrix[i][0] = val;
+    }
     /**************************************/
 
-    println!("{}", seq);
-    println!("{:?}", seq_vec);
+    let mut diag_val;
+    let mut left_val;
+    let mut uppr_val;
+
+    for i in 1..len_2 {
+        for j in 1..len_1 {
+            diag_val = {
+                let mut sum = 0;
+                for sec in seq_vec.iter() {
+                    sum += score(seq.chars().nth(i).unwrap(), sec.chars().nth(j).unwrap());
+                }
+                sum += matrix[i - 1][j - 1];
+                sum
+            };
+
+            left_val = {
+                let mut sum = 0;
+                for _ in seq_vec.iter() {
+                    // sum += score(seq.chars().nth(i).unwrap(), sec.chars().nth(j - 1).unwrap());
+                    sum += score(seq.chars().nth(i).unwrap(), '_');
+                }
+                sum += matrix[i][j - 1];
+                sum
+            };
+
+            uppr_val = {
+                let mut sum = 0;
+                for sec in seq_vec.iter() {
+                    // sum += score(seq.chars().nth(i - 1).unwrap(), sec.chars().nth(j).unwrap());
+                    sum += score('_', sec.chars().nth(j).unwrap());
+                }
+                sum += matrix[i - 1][j];
+                sum
+            };
+
+            matrix[i][j] = min(diag_val, min(left_val, uppr_val));
+        }
+    }
+
+    print_matrix(seq_vec, seq, &matrix);
 }
 
 fn tps_alignment(seqs: Vec<&str>) {
@@ -189,9 +255,7 @@ fn tps_alignment(seqs: Vec<&str>) {
 }
 
 fn main() {
-    let seqs: Vec<&str> = vec!["ACTCAT",
-                               "AGTCAT",
-                               "ACGTCCT"];
+    let seqs: Vec<&str> = vec!["ACTCAT", "AGTCAT", "ACGTCCT"];
 
     tps_alignment(seqs);
 }
