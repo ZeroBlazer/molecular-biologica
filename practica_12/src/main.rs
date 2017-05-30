@@ -3,15 +3,36 @@ enum Direction {
     Diagonal,
     Up,
     Left,
+    Undef,
+}
+
+impl Clone for Direction {
+    fn clone(&self) -> Direction {
+        match *self {
+            Diagonal => Direction::Diagonal,
+            Up => Direction::Up,
+            Left => Direction::Left,
+            Undef => Direction::Undef,
+        }
+    }
 }
 
 use Direction::*;
 use std::cmp::{max, min};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Score {
     val: i32,
     dir: Direction,
+}
+
+impl Score {
+    fn new() -> Score {
+        Score {
+            val: 0,
+            dir: Undef
+        }
+    }
 }
 
 fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i32 {
@@ -36,7 +57,7 @@ fn get_score(a: char, b: char) -> i32 {
     if a == b { 1 } else { -1 }
 }
 
-fn print_matrix(seq_vec: &Vec<String>, seq: &String, mtrx: &Vec<Vec<i32>>) {
+fn print_matrix(seq_vec: &Vec<String>, seq: &String, mtrx: &Vec<Vec<Score>>) {
     for sec in seq_vec.iter() {
         print!("\t");
         for chr in sec.chars() {
@@ -54,7 +75,7 @@ fn print_matrix(seq_vec: &Vec<String>, seq: &String, mtrx: &Vec<Vec<i32>>) {
     for chr in seq.chars() {
         print!("{}\t", chr);
         for elem in mtrx[i].iter() {
-            print!("{}\t", elem);
+            print!("{}\t", elem.val);
         }
         println!("");
         i += 1;
@@ -132,6 +153,7 @@ fn align_secuence(sec_1: &str, sec_2: &str) -> (String, String) {
                 align1.push(sec_1.as_bytes()[j - 1] as char);
                 align2.push('_');
             }
+            Undef => {}
         }
 
         if greater == diag_val {
@@ -175,14 +197,15 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
     let len_1 = seq_vec[0].len();
     let len_2 = seq.len();
 
-    let mut matrix: Vec<Vec<i32>> = vec![vec![0; len_1]; len_2];
+    let mut matrix: Vec<Vec<Score>> = vec![vec![Score::new(); len_1]; len_2];
 
     let mut val = 0;
     for j in 1..len_1 {
         for sec in seq_vec.iter() {
             val += score(seq.chars().nth(0).unwrap(), sec.chars().nth(j).unwrap());
         }
-        matrix[0][j] = val;
+        matrix[0][j].val = val;
+        matrix[0][j].dir = Left;
     }
 
     val = 0;
@@ -190,7 +213,8 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
         for sec in seq_vec.iter() {
             val += score(seq.chars().nth(i).unwrap(), sec.chars().nth(0).unwrap());
         }
-        matrix[i][0] = val;
+        matrix[i][0].val = val;
+        matrix[i][0].dir = Up;
     }
     /**************************************/
 
@@ -205,7 +229,7 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
                 for sec in seq_vec.iter() {
                     sum += score(seq.chars().nth(i).unwrap(), sec.chars().nth(j).unwrap());
                 }
-                sum += matrix[i - 1][j - 1];
+                sum += matrix[i - 1][j - 1].val;
                 sum
             };
 
@@ -214,7 +238,7 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
                 for _ in seq_vec.iter() {
                     sum += score(seq.chars().nth(i).unwrap(), '_');
                 }
-                sum += matrix[i][j - 1];
+                sum += matrix[i][j - 1].val;
                 sum
             };
 
@@ -223,11 +247,20 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
                 for sec in seq_vec.iter() {
                     sum += score('_', sec.chars().nth(j).unwrap());
                 }
-                sum += matrix[i - 1][j];
+                sum += matrix[i - 1][j].val;
                 sum
             };
 
-            matrix[i][j] = min(diag_val, min(left_val, uppr_val));
+            matrix[i][j].val = min(diag_val, min(left_val, uppr_val));
+            matrix[i][j].dir = if matrix[i][j].val == diag_val {
+                Diagonal
+            } else if matrix[i][j].val == left_val {
+                Left
+            } else if matrix[i][j].val == uppr_val {
+                Up
+            } else {
+                Undef
+            };
         }
     }
 
@@ -241,7 +274,28 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
     }
     /**************************************/
 
-
+    let mut i = len_2 - 1;
+    let mut j = len_1 - 1;
+    let mut dir: Direction;
+    while i != 0 && j != 0 {
+        dir = matrix[i][j].dir.clone();
+        println!("{} -> {:?}", matrix[i][j].val, dir);
+        match dir {
+            Diagonal => {
+                i -= 1;
+                j -= 1;
+            }
+            Left => {
+                j -= 1;
+            }
+            Up => {
+                i -= 1;
+            }
+            Undef => {
+                break;
+            }
+        }
+    }
 }
 
 fn tps_alignment(seqs: Vec<&str>) {
