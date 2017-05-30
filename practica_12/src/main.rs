@@ -28,10 +28,7 @@ struct Score {
 
 impl Score {
     fn new() -> Score {
-        Score {
-            val: 0,
-            dir: Undef
-        }
+        Score { val: 0, dir: Undef }
     }
 }
 
@@ -279,22 +276,33 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
     let mut dir: Direction;
     while i != 0 && j != 0 {
         dir = matrix[i][j].dir.clone();
-        println!("{} -> {:?}", matrix[i][j].val, dir);
+
         match dir {
             Diagonal => {
                 i -= 1;
                 j -= 1;
             }
             Left => {
+                let term = seq.split_off(j);
+                seq = format!("{}_{}", seq, term);
                 j -= 1;
             }
             Up => {
+                for mut sec in seq_vec.iter_mut() {
+                    let term = sec.split_off(i);
+                    *sec = format!("{}_{}", sec, term);
+                }
                 i -= 1;
             }
             Undef => {
                 break;
             }
         }
+    }
+
+    println!("\n> {}", seq);
+    for sec in seq_vec.iter() {
+        println!("> {}", sec)
     }
 }
 
