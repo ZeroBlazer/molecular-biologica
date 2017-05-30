@@ -8,6 +8,12 @@ enum Direction {
 use Direction::*;
 use std::cmp::{max, min};
 
+#[derive(Debug)]
+struct Score {
+    val: i32,
+    dir: Direction,
+}
+
 fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i32 {
     let mut hsp = 0;
 
@@ -235,7 +241,7 @@ fn align_seqs(mut seq_vec: Vec<String>, mut seq: String) {
     }
     /**************************************/
 
-    
+
 }
 
 fn tps_alignment(seqs: Vec<&str>) {
