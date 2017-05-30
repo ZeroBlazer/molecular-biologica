@@ -332,6 +332,5 @@ fn tps_alignment(seqs: Vec<&str>) {
 
 fn main() {
     let seqs: Vec<&str> = vec!["ACTCAT", "AGTCAT", "ACGTCCT"];
-
     tps_alignment(seqs);
 }
