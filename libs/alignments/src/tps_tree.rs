@@ -25,12 +25,12 @@ impl TpsJoint {
     }
 
     pub fn from_strings(sec_1: &str, sec_2: &str) -> TpsJoint {
-        let (align2, align1) = align_secuence(sec_1, sec_2);
+        let aligns = align_seqs(String::from(sec_1), String::from(sec_2));
 
         TpsJoint {
             left: Seq(String::from(sec_1)),
             right: Seq(String::from(sec_2)),
-            alignments: vec![align1, align2]
+            alignments: aligns
         }
     }
 }
