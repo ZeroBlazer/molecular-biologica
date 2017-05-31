@@ -23,9 +23,15 @@ struct Score<T> {
     dir: Direction,
 }
 
-impl Score {
-    fn new() -> Score {
+impl Score<i32> {
+    fn new() -> Score<i32> {
         Score { val: 0, dir: Undef }
+    }
+}
+
+impl Score<f32> {
+    fn new() -> Score<f32> {
+        Score { val: 0.0, dir: Undef }
     }
 }
 
@@ -53,7 +59,8 @@ fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32
     hsp
 }
 
-fn print_matrix(seq_vec1: &Vec<String>, seq_vec2: &Vec<String>, mtrx: &Vec<Vec<Score>>) {
+fn print_matrix<T>(seq_vec1: &Vec<String>, seq_vec2: &Vec<String>, mtrx: &Vec<Vec<Score<T>>>)
+    where T: std::fmt::Display {
     let len_2 = seq_vec2.len();
     for sec in seq_vec1.iter() {
         for _ in 0..len_2 {
@@ -97,7 +104,7 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) {
     let len_1 = seq_vec[0].len();
     let len_2 = seq.len();
 
-    let mut matrix: Vec<Vec<Score>> = vec![vec![Score::new(); len_1]; len_2];
+    let mut matrix: Vec<Vec<Score<i32>>> = vec![vec![Score::<i32>::new(); len_1]; len_2];
 
     let mut val = 0;
     for j in 1..len_1 {
@@ -164,7 +171,7 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) {
         }
     }
 
-    print_matrix(&seq_vec, &seq, &matrix);
+    print_matrix(&seq_vec, &vec![seq.clone()], &matrix);
 
     /********* Restore sequences **********/
     seq.remove(0);
@@ -232,7 +239,7 @@ fn align_alignments(mut seq_vec1: Vec<String>, mut seq_vec2: Vec<String>) {
     let len_2 = seq_vec2[0].len();
     let n_seqs = (seq_vec1.len() + seq_vec2.len()) as f32;
 
-    let mut matrix: Vec<Vec<Score>> = vec![vec![Score::new(); len_1]; len_2];
+    let mut matrix: Vec<Vec<Score<f32>>> = vec![vec![Score::<f32>::new(); len_1]; len_2];
 
     for j in 1..len_1 {
         matrix[0][j].dir = Left;
@@ -326,8 +333,6 @@ fn align_alignments(mut seq_vec1: Vec<String>, mut seq_vec2: Vec<String>) {
     let mut dir: Direction;
     while i != 0 || j != 0 {
         dir = matrix[i][j].dir.clone();
-        println!("{:?}", dir);
-
         match dir {
             Diagonal => {
                 i -= 1;
