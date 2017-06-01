@@ -126,7 +126,7 @@ fn align_secuence(sec_1: &str,
 
     while {
         let hsp = get_hsp(&align1, &align2, match_scr, mism_scr);
-        // println!("{}, {}\n{} -> {}\n", align1, align2, hsp, hsp > u);
+        println!("{}, {}\n{} -> {}\n", align1, align2, hsp, hsp > u);
         hsp > u
     } {
         algn1 = align1.clone();
@@ -145,6 +145,7 @@ fn align_secuence(sec_1: &str,
 }
 
 fn main() {
-    align_secuence("TCAGATCAACT", "GTATCGAAA", 3, 1, -2, 3, -5);
-    // align_secuence("TCAGATCACTT", "GTATCGCTC", 3, 1, -2, 3, -5);
+    // align_secuence("TCAGATCAACT", "GTATCGAAA", 3, 1, -2, 3, -5);
+    align_secuence("TCAGATCACGG", "GTATCGCTC", 3, 1, -2, 3, -5);
+    align_secuence("GGAT", "GAT", 3, 1, -2, 3, -5);
 }

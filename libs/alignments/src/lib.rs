@@ -52,11 +52,11 @@ impl Score<f32> {
     }
 }
 
-// mod tps_tree;
+mod tps_tree;
 
-// use tps_tree::{TpsTree, TpsJoint};
+use tps_tree::{TpsTree, TpsJoint};
 use Direction::*;
-use std::cmp::{max, min};
+use std::cmp::min;
 
 fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i32 {
     let mut hsp = 0;
@@ -341,9 +341,8 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
     // for sec in seq_vec.iter() {
     //     println!("> {}", sec)
     // }
-    let mut vec = vec![seq];
-    vec.append(&mut seq_vec);
-    vec
+    seq_vec.push(seq);
+    seq_vec
 }
 
 fn align_alignments(mut seq_vec1: Vec<String>, mut seq_vec2: Vec<String>) -> Vec<String> {
@@ -531,7 +530,7 @@ pub fn tps_alignment(seqs: Vec<&str>) {
     }
 
     my_vec.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
-    // println!("{:?}", my_vec);
+    println!("{:?}", my_vec);
 
     // align_alignments(vec![String::from("AAAC"), String::from("_GAC")],
     //                  vec![String::from("AGC"), String::from("ACC")]);
@@ -546,9 +545,12 @@ pub fn tps_alignment(seqs: Vec<&str>) {
     // align_alignments(vec![String::from("TGTAAC")],
     //                  vec![String::from("TGTAC")]);
 
-    // let tree = TpsTree::new();
-    // let joint1 = TpsJoint::from_strings(seqs[my_vec[0].1], seqs[my_vec[0].2]);
+    let mut tree = TpsTree::new();
+    let joint1 = TpsJoint::from_strings(seqs[my_vec[0].1], seqs[my_vec[0].2]);
     // println!("{:?}", joint1);
-    // let joint2 = TpsJoint::from_strings(seqs[my_vec[2].1], seqs[my_vec[2].2]);
+    tree.insert_joint(joint1);
+    let joint2 = TpsJoint::from_strings(seqs[my_vec[2].1], seqs[my_vec[2].2]);
     // println!("{:?}", joint2);
+    tree.insert_joint(joint2);
+    println!("{:?}", tree);
 }
