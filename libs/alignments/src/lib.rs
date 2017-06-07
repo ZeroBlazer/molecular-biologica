@@ -52,11 +52,11 @@ impl Score<f32> {
     }
 }
 
-// mod tps_tree;
+mod tps_tree;
 
-// use tps_tree::{TpsTree, TpsJoint};
+use tps_tree::{TpsTree, TpsJoint};
 use Direction::*;
-use std::cmp::{max, min};
+use std::cmp::{min, max};
 
 fn get_hsp(w1: &String, w2: &String, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i32 {
     let mut hsp = 0;
@@ -221,12 +221,12 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
     }
     /********* score function **********/
     fn score(a: char, b: char) -> i32 {
-        if a == b {
+        if a == '_' || b == '_' {
             0
-        } else if a == '_' || b == '_' {
+        } else if a == b {
             2
         } else {
-            3
+            1
         }
     }
     /********* Initialize matrix **********/
@@ -237,9 +237,9 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
 
     let mut val = 0;
     for j in 1..len_1 {
-        for sec in seq_vec.iter() {
-            val += score(seq.chars().nth(0).unwrap(), sec.chars().nth(j).unwrap());
-        }
+        // for sec in seq_vec.iter() {
+        //     val += score(seq.chars().nth(0).unwrap(), sec.chars().nth(j).unwrap());
+        // }
         matrix[0][j].val = val;
         matrix[0][j].dir = Left;
     }
@@ -286,7 +286,7 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
                 sum
             };
 
-            matrix[i][j].val = min(diag_val, min(left_val, uppr_val));
+            matrix[i][j].val = max(diag_val, max(left_val, uppr_val));
             matrix[i][j].dir = if matrix[i][j].val == diag_val {
                 Diagonal
             } else if matrix[i][j].val == left_val {
@@ -311,7 +311,7 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
     let mut i = len_2 - 1;
     let mut j = len_1 - 1;
     let mut dir: Direction;
-    while i != 0 && j != 0 {
+    loop {
         dir = matrix[i][j].dir.clone();
 
         match dir {
@@ -320,13 +320,13 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
                 j -= 1;
             }
             Left => {
-                let term = seq.split_off(j);
+                let term = seq.split_off(i);
                 seq = format!("{}_{}", seq, term);
                 j -= 1;
             }
             Up => {
                 for mut sec in seq_vec.iter_mut() {
-                    let term = sec.split_off(i);
+                    let term = sec.split_off(j);
                     *sec = format!("{}_{}", sec, term);
                 }
                 i -= 1;
@@ -337,13 +337,8 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
         }
     }
     /**************************************/
-    // println!("\n> {}", seq);
-    // for sec in seq_vec.iter() {
-    //     println!("> {}", sec)
-    // }
-    let mut vec = vec![seq];
-    vec.append(&mut seq_vec);
-    vec
+    seq_vec.push(seq);
+    seq_vec
 }
 
 fn align_alignments(mut seq_vec1: Vec<String>, mut seq_vec2: Vec<String>) -> Vec<String> {
@@ -531,24 +526,22 @@ pub fn tps_alignment(seqs: Vec<&str>) {
     }
 
     my_vec.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
-    // println!("{:?}", my_vec);
+    println!("{:?}", my_vec);
 
-    // align_alignments(vec![String::from("AAAC"), String::from("_GAC")],
-    //                  vec![String::from("AGC"), String::from("ACC")]);
+    // println!("{:?}", align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()));
+    // println!("{:?}", align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string()));
+    // println!("{:?}", align_alignments(align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()),
+    //                                   align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string())));
+    println!("{:?}", align_seqs_seq(align_alignments(align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()),
+                                                     align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string())),
+                                    seqs[my_vec[3].1].to_string()));
 
-    // align_seqs_seq(vec![String::from("ACTCAT"), String::from("AGTCAT")],
-    //                String::from("ACGTCCT"));
-
-    // align_seqs(String::from("ACCGTCTT"), String::from("CGTCTT"));
-    // align_seqs(String::from("TGTAAC"), String::from("TGTAC"));
-    // align_seqs(String::from("ATGTC"), String::from("ATGTGGC"));
-
-    // align_alignments(vec![String::from("TGTAAC")],
-    //                  vec![String::from("TGTAC")]);
-
-    // let tree = TpsTree::new();
+    // let mut tree = TpsTree::new();
     // let joint1 = TpsJoint::from_strings(seqs[my_vec[0].1], seqs[my_vec[0].2]);
-    // println!("{:?}", joint1);
+    // // println!("{:?}", joint1);
+    // tree.insert_joint(joint1);
     // let joint2 = TpsJoint::from_strings(seqs[my_vec[2].1], seqs[my_vec[2].2]);
-    // println!("{:?}", joint2);
+    // // println!("{:?}", joint2);
+    // tree.insert_joint(joint2);
+    // println!("{:?}", tree);
 }

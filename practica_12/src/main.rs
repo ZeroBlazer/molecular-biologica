@@ -320,17 +320,20 @@ fn tps_alignment(seqs: Vec<&str>) {
     }
 
     my_vec.sort_by(|a, b| a.0.cmp(&b.0));
-    // println!("{:?}", my_vec);
-
-    let mut first = Vec::new();
-    first.push(my_vec[0].4.clone());
-    first.push(my_vec[0].3.clone());
-    let second = my_vec[2].3.clone();
-
+    println!("{:?}", my_vec);
+        let mut first = Vec::new();
+        first.push(my_vec[0].4.clone());
+        first.push(my_vec[0].3.clone());
+        let second = my_vec[2].3.clone();
     align_seqs(first, second);
 }
 
 fn main() {
+<<<<<<< HEAD
     let seqs: Vec<&str> = vec!["ACTCAT", "AGTTTCAT", "ACGTCCT"];
+=======
+    let seqs: Vec<&str> = vec!["ACTCAT", "AGTCAT", "ACGTCCT"];
+    // let seqs: Vec<&str> = vec!["ACTCAT", "AGTCAT", "ACGTCAT"];
+>>>>>>> f434371992d40134d962d2019e8ab6ced48f470a
     tps_alignment(seqs);
 }
