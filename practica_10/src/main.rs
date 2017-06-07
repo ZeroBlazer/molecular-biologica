@@ -145,6 +145,7 @@ fn align_secuence(sec_1: &str,
 }
 
 fn main() {
-    align_secuence("TCAGATCAACT", "GTATCGAAA", 3, 1, -2, 3, -5);
+    // align_secuence("TCAGATCAACT", "GTATCGAAA", 3, 1, -2, 3, -5);
     // align_secuence("TCAGATCACTT", "GTATCGCTC", 3, 1, -2, 3, -5);
+    align_secuence("TCAGATCACGG", "GTATCGCGC", 3, 1, -2, 3, -5);
 }
