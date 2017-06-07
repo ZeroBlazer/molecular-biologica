@@ -45,17 +45,16 @@ impl TpsTree {
         TpsTree { root: None }
     }
 
-    pub fn insert_joint(&mut self, joint: TpsJoint) {
-        match self.root {
-            Some(ref p_root) => {
-                let mut left_child = TpsJoint {
-                    left: p_root.left,
-                    right: p_root.right,
-                    alignments: p_root.alignments
-                };
-                // p_root = Box::new(new_root);
-            }
-            None => self.root = Some(Box::new(joint)),
-        }
-    }
+    // pub fn insert_joint(&mut self, joint: TpsJoint) {
+    //     match self.root {
+    //         Some(ref p_root) => {
+    //             let mut left_child = TpsJoint {
+    //                 left: p_root.left,
+    //                 right: p_root.right,
+    //                 alignments: p_root.alignments
+    //             };
+    //         }
+    //         None => self.root = Some(Box::new(joint)),
+    //     }
+    // }
 }
