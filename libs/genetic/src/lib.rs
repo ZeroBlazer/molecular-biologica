@@ -125,6 +125,8 @@ impl Population {
 
         println!("Padre: {}", parent1 + 1);
         println!("Madre: {}", parent2 + 1);
+
+        
     }
 }
 
