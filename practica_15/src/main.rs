@@ -4,6 +4,17 @@ use rand::Rng;
 
 static BINARY: [&str; 2] = ["0", "1"];
 
+
+pub trait Cromosome {
+    fn new(size: usize, ) -> Cromosome;
+    fn random(&mut self);
+    fn fitness(&self) -> u32;
+    fn crossover(&mut self, parent2: &mut Cromosome, crosspoint: usize);
+    fn mutate(&mut self);
+}
+
+
+
 #[derive(Debug)]
 pub struct Cromosome {
     size: usize,
@@ -66,10 +77,10 @@ impl Cromosome {
 }
 
 #[derive(Debug)]
-pub struct Population {
+pub struct Population<Cr> {
     pob_size: usize,
     crom_size: usize,
-    population: Vec<Cromosome>,
+    population: Vec<Cr>,
     ruleta_vec: Vec<f32>,
 }
 
@@ -272,4 +283,10 @@ impl Solver {
 
         println!("\nFin del Proceso");
     }
+}
+
+fn main() {
+    let mut solver = Solver::new(6, 8, 100, 0.9, 3, 0.05);
+    solver.evolve();
+    println!("Hello, world!");
 }
