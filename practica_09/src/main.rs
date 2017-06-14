@@ -169,6 +169,7 @@ fn align_secuence(sec_1: &str, sec_2: &str, match_scr: i32, mism_scr: i32, gap_p
 fn main() {
     // align_secuence("GGAT", "GAT", 1, -1, -1);
     // align_secuence("GAATTCAGTTA", "GGATCGA", 5, -3, -4);
-    align_secuence("GAATTCGAGTTA", "GGATCGA", 5, -3, -4);
+    // align_secuence("GAATTCGAGTTA", "GGATCGA", 5, -3, -4);
     // align_secuence("CAGTATCGT", "GTACGTATC", 1, -1, -2);
+    align_secuence("GACTTC", "ATT", 1, -1, -2);
 }

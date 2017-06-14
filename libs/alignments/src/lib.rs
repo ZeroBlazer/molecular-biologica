@@ -528,10 +528,10 @@ pub fn tps_alignment(seqs: Vec<&str>) {
     my_vec.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
     println!("{:?}", my_vec);
 
-    // println!("{:?}", align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()));
-    // println!("{:?}", align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string()));
-    // println!("{:?}", align_alignments(align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()),
-    //                                   align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string())));
+    println!("{:?}", align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()));
+    println!("{:?}", align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string()));
+    println!("{:?}", align_alignments(align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()),
+                                      align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string())));
     println!("{:?}", align_seqs_seq(align_alignments(align_seqs(seqs[my_vec[0].1].to_string(), seqs[my_vec[0].2].to_string()),
                                                      align_seqs(seqs[my_vec[2].1].to_string(), seqs[my_vec[2].2].to_string())),
                                     seqs[my_vec[3].1].to_string()));
@@ -544,4 +544,21 @@ pub fn tps_alignment(seqs: Vec<&str>) {
     // // println!("{:?}", joint2);
     // tree.insert_joint(joint2);
     // println!("{:?}", tree);
+
+    // let mut to_align: Vec<usize> = Vec::new();
+    // let mut is_in: Vec<usize> = Vec::new();
+    // let mut are_in = 0;
+    // for pair in my_vec.iter() {
+    //     if are_in == seqs.len() {
+    //         break;
+    //     }
+    //     if let Some(val_1) = is_in.iter_mut().find(|&x| *x == pair.1) {
+    //         if let Some(val_2) = is_in.iter().find(|&x| *x == pair.2) {
+    //             to_align.push(*val_1);
+    //             to_align.push(*val_2);
+    //             is_in.push(*val_1);
+    //             is_in.push(*val_2);
+    //         }
+    //     }
+    // }
 }

@@ -233,5 +233,10 @@ fn main() {
     //                            "CCTGTAGG"];
     // star_alignment(seqs);
 
-    println!("{:?}", align_secuence("GATGTGCCG", "CCTGTAGG"));
+    // println!("{:?}", align_secuence("GATGTGCCG", "CCTGTAGG"));
+
+    let seqs: Vec<&str> = vec!["TCAG",
+                               "GCCG",
+                               "CGG"];
+    star_alignment(seqs);
 }

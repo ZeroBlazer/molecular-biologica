@@ -1,0 +1,8 @@
+[package]
+name = "practica_15"
+version = "0.1.0"
+authors = ["Elías Puma <elpumitaelias@gmail.com>"]
+
+[dependencies]
+genetic = { path = "../libs/genetic/" }
+rand = "0.3"
