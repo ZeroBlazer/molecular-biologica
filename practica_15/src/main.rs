@@ -339,17 +339,8 @@ impl Solver {
 }
 
 fn main() {
-    let mut solver = Solver::new(6, 9, 10, 0.9, 3, 0.2);
+    let mut solver = Solver::new(100, 22, 100, 0.9, 3, 0.2);
     solver.evolve(vec!["AGTCATTAATTGCGGTTAG", "CCAATTGTAGTT", "AGCATTCGTAGTT", "GTTCAAGGGAGTT"]);
+    // let mut solver = Solver::new(6, 9, 10, 0.9, 3, 0.2);
     // solver.evolve(vec!["ADSDAAC", "ADTTC", "ADTCD"]);
-    
-    // let mut cro1 = Cromosome::new(9, vec!["ADSDAAC", "ADTTC"]);
-    // let mut cro2 = Cromosome::new(9, vec!["ADASAC", "AADTC"]);
-    // println!("{:#?}\n{}", cro1, cro1.fitness());
-    // println!("{:#?}\n{}", cro2, cro1.fitness());
-    // cro1.mutate();
-    // cro2.mutate();
-    // println!("{:#?}\n{}", cro1, cro1.fitness());
-    // println!("{:#?}\n{}", cro2, cro1.fitness());
-    // println!("{:#?}", Cromosome::new(22, vec!["AGTCATTAATTGCGGTTAG", "CCAATTGTAGTT", "AGCATTCGTAGTT", "GTTCAAGGGAGTT"]));
 }
