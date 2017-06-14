@@ -339,7 +339,7 @@ impl Solver {
 }
 
 fn main() {
-    let mut solver = Solver::new(100, 22, 100, 0.9, 3, 0.2);
+    let mut solver = Solver::new(4, 22, 100, 0.9, 6, 0.2);
     solver.evolve(vec!["AGTCATTAATTGCGGTTAG", "CCAATTGTAGTT", "AGCATTCGTAGTT", "GTTCAAGGGAGTT"]);
     // let mut solver = Solver::new(6, 9, 10, 0.9, 3, 0.2);
     // solver.evolve(vec!["ADSDAAC", "ADTTC", "ADTCD"]);
