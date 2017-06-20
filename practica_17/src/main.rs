@@ -9,12 +9,13 @@ enum Node {
     C,
     D,
     E,
+    F,
 }
 
 use Node::*;
 
-const N_NODES: usize = 5;
-static AVAIL_NODES: [Node; N_NODES] = [A, B, C, D, E];
+const N_NODES: usize = 6;
+static AVAIL_NODES: [Node; N_NODES] = [A, B, C, D, E, F];
 
 #[derive(Debug)]
 struct Ant {
@@ -64,15 +65,16 @@ impl AntColony {
         num_it: usize,
     ) -> AntColony {
         let distance = [
-            [0.0, 12.0, 3.0, 23.0, 1.0],
-            [12.0, 0.0, 9.0, 18.0, 3.0],
-            [3.0, 9.0, 0.0, 89.0, 56.0],
-            [23.0, 18.0, 89.0, 0.0, 87.0],
-            [1.0, 3.0, 56.0, 87.0, 0.0],
+            [0.0, 12.0, 3.0, 23.0, 1.0, 5.0],
+            [12.0, 0.0, 9.0, 18.0, 3.0, 41.0],
+            [3.0, 9.0, 0.0, 89.0, 56.0, 21.0],
+            [23.0, 18.0, 89.0, 0.0, 87.0, 46.5],
+            [1.0, 3.0, 56.0, 87.0, 0.0, 55.0],
+            [5.0, 41.0, 21.0, 46.0, 55.0, 0.0]
         ];
 
-        let mut visibility = [[0.0; 5]; 5];
-        let mut pheromone = [[0.0; 5]; 5];
+        let mut visibility = [[0.0; N_NODES]; N_NODES];
+        let mut pheromone = [[0.0; N_NODES]; N_NODES];
         for y in 0..N_NODES {
             for x in 0..N_NODES {
                 if x != y {
@@ -223,7 +225,7 @@ impl AntColony {
             let mut vec_ants = Vec::new();
             for i in 0..self.num_ant {
                 println!("Hormiga {}", i + 1);
-                let start_node = D;
+                let start_node = E;
                 let mut ant = Ant::new(&start_node);
                 println!("Ciudad inicial: {:?}", start_node);
                 for _ in 0..N_NODES - 1 {
@@ -265,6 +267,6 @@ impl AntColony {
 }
 
 fn main() {
-    let mut colony = AntColony::new(0.99, 1.0, 1.0, 1, 0.1, 3, 100);
+    let mut colony = AntColony::new(0.99, 1.0, 1.0, 1, 0.1, 3, 1);
     colony.ant_iteration();
 }
