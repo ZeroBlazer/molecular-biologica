@@ -54,22 +54,19 @@ struct AntColony {
 }
 
 impl AntColony {
-    fn new(
-        rho: f64,
-        alpha: f64,
-        beta: f64,
-        q: i32,
-        init_phero: f64,
-        num_ant: usize,
-        num_it: usize,
-    ) -> AntColony {
-        let distance = [
-            [0.0, 12.0, 3.0, 23.0, 1.0],
-            [12.0, 0.0, 9.0, 18.0, 3.0],
-            [3.0, 9.0, 0.0, 89.0, 56.0],
-            [23.0, 18.0, 89.0, 0.0, 87.0],
-            [1.0, 3.0, 56.0, 87.0, 0.0],
-        ];
+    fn new(rho: f64,
+           alpha: f64,
+           beta: f64,
+           q: i32,
+           init_phero: f64,
+           num_ant: usize,
+           num_it: usize)
+           -> AntColony {
+        let distance = [[0.0, 12.0, 3.0, 23.0, 1.0],
+                        [12.0, 0.0, 9.0, 18.0, 3.0],
+                        [3.0, 9.0, 0.0, 89.0, 56.0],
+                        [23.0, 18.0, 89.0, 0.0, 87.0],
+                        [1.0, 3.0, 56.0, 87.0, 0.0]];
 
         let mut visibility = [[0.0; 5]; 5];
         let mut pheromone = [[0.0; 5]; 5];
@@ -129,14 +126,12 @@ impl AntColony {
             let n = self.visibility[curr_indx][next_indx].powf(self.beta);
             let t_n = t * n;
             sum += t_n;
-            println!(
-                "{:?}-{:?}: t = {}\tn = {}\tt*n = {}",
-                current,
-                next,
-                t,
-                n,
-                t_n
-            );
+            println!("{:?}-{:?}: t = {}\tn = {}\tt*n = {}",
+                     current,
+                     next,
+                     t,
+                     n,
+                     t_n);
             vec_tnp.push(t_n);
         }
 
@@ -177,25 +172,18 @@ impl AntColony {
         for i in 0..N_NODES {
             for j in 0..N_NODES {
                 if i != j {
-                    self.pheromone[i][j] = self.pheromone[i][j] * self.rho;
-                    print!(
-                        "{:?}-{:?}: Feromona = {}",
-                        AVAIL_NODES[i],
-                        AVAIL_NODES[j],
-                        self.pheromone[i][j]
-                    );
+                    self.pheromone[i][j] *= self.rho;
+                    print!("{:?}-{:?}: Feromona = {}",
+                           AVAIL_NODES[i],
+                           AVAIL_NODES[j],
+                           self.pheromone[i][j]);
                     for &(path, cost) in &vec_paths {
                         // let f_x = self.pheromone[i][j] * self.rho;
                         let mut f_x = 0.0;
                         for x in 1..path.len() {
-                            if path[x] == AVAIL_NODES[i] {
-                                if path[x - 1] == AVAIL_NODES[j] {
-                                    f_x = 1.0 / cost;
-                                }
-                            } else if path[x] == AVAIL_NODES[j] {
-                                if path[x - 1] == AVAIL_NODES[i] {
-                                    f_x = 1.0 / cost;
-                                }
+                            if (path[x] == AVAIL_NODES[i] && path[x - 1] == AVAIL_NODES[j]) ||
+                               (path[x] == AVAIL_NODES[j] && path[x - 1] == AVAIL_NODES[i]) {
+                                f_x = 1.0 / cost;
                             }
                         }
                         print!(" + {}", f_x);
@@ -213,7 +201,7 @@ impl AntColony {
         // print_matrix(&self.pheromone, "Matriz Feromona");
         let mut best_global_ant: (Vec<Node>, f32) = (Vec::new(), 100000000.0);
         for iter in 0..self.num_it {
-            println!("\nIteración {}", iter +1 );
+            println!("\nIteración {}", iter + 1);
             println!("Matriz Distancia\n{:?}", &self.distance);
             println!("Matriz Visibilidad\n{:?}", &self.visibility);
             println!("Matriz Feromona\n{:?}", &self.pheromone);
@@ -239,12 +227,7 @@ impl AntColony {
             let mut tupl_vec = Vec::new();
             for (indx, ant) in vec_ants.iter().enumerate() {
                 let cost = self.get_path_cost(ant);
-                println!(
-                    "Hormiga {} {:?} - Costo: {}",
-                    indx + 1,
-                    ant,
-                    cost
-                );
+                println!("Hormiga {} {:?} - Costo: {}", indx + 1, ant, cost);
                 if cost < best_iter_ant.1 {
                     best_iter_ant.0 = ant.clone();
                     best_iter_ant.1 = cost;
@@ -255,12 +238,17 @@ impl AntColony {
                 }
                 tupl_vec.push((ant, cost));
             }
-            println!("----------\nMejor Hormiga Iteración {}: {:?} - Costo: {}\n----------", iter + 1, best_iter_ant.0, best_iter_ant.1);
+            println!("----------\nMejor Hormiga Iteración {}: {:?} - Costo: {}\n----------",
+                     iter + 1,
+                     best_iter_ant.0,
+                     best_iter_ant.1);
 
             self.update_pheromone(tupl_vec);
         }
 
-        println!("----------\nMejor Hormiga Global: {:?} - Costo: {}\n----------", best_global_ant.0, best_global_ant.1);
+        println!("----------\nMejor Hormiga Global: {:?} - Costo: {}\n----------",
+                 best_global_ant.0,
+                 best_global_ant.1);
     }
 }
 
