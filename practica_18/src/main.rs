@@ -97,16 +97,23 @@ fn seqs_deviation(seq_1: &str, seq_2: &str) -> Vec<Vec<f64>> {
     deviat_vec
 }
 
-// #[derive(Debug)]
-// struct Ant {
-//     memory: Vec<usize>,
-// }
+#[derive(Debug)]
+struct Ant {
+    memory: Vec<usize>,
+}
 
-// impl Ant {
-//     fn new() -> Ant {
-//         Ant { memory: Vec::new() }
-//     }
-// }
+impl Ant {
+    fn new() -> Ant {
+        Ant {
+            // memory: Vec::new()
+            memory: vec![0, 3, 3, 4, 1, 5, 5, 5, 3, 6, 6, 6, 4, 8, 0, 0],
+        }
+    }
+
+    fn print(&self) {
+        println!("{:?}", self.memory);
+    }
+}
 
 #[derive(Debug)]
 struct AntColony {
@@ -193,7 +200,37 @@ impl AntColony {
         }
     }
 
+    fn print_alignment(&self, ant: &Ant) {
+        let n_seqs = self.seqs.len();
+        let n_arr = ant.memory.len() / n_seqs;
+        let mut indx_iter = ant.memory.iter();
+        // let mut alignments = Vec::new();
+        for _ in 0..n_arr {
+            let mut indx_aux = vec![0; n_seqs];
+            let mut offset = vec![0; n_seqs];
+            let mut greatest: usize = 0;
+            
+            for i in 0..n_seqs {
+                let indx = *indx_iter.next().unwrap();
+                offset[i] = indx - indx_aux[i];
+                indx_aux[i] = indx;
+                if greatest < indx {
+                    greatest = indx;
+                }
+            }
+
+            // for i in 0..n_seqs {
+
+            // }
+
+            println!("{}: {:?} -> {:?}", greatest, indx_aux, offset);
+        }
+    }
+
     fn iterate(&mut self) {
+        let ant = Ant::new();
+        ant.print();
+        self.print_alignment(&ant);
         println!("Hello world!");
     }
 }
