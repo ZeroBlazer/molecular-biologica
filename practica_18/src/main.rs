@@ -12,6 +12,24 @@ fn score(c1: char, c2: char, scr_match: f64, scr_miss: f64, scr_gap: f64) -> f64
     }
 }
 
+fn get_hsp(w1: &String, w2: &String, match_scr: f64, mism_scr: f64, gap_scr: f64) -> f64 {
+    let mut hsp = 0.0;
+
+    let mut chars2 = w2.chars();
+    for c1 in w1.chars() {
+        let c2 = chars2.next().unwrap();
+        hsp += if c1 == '_' || c2 == '_' {
+            gap_scr
+        } else if c1 == c2 {
+            match_scr 
+        } else {
+            mism_scr
+        } as f64;
+    }
+
+    hsp
+}
+
 fn seqs_distance(seq_1: &str,
                  seq_2: &str,
                  scr_match: f64,
@@ -106,7 +124,8 @@ impl Ant {
     fn new() -> Ant {
         Ant {
             // memory: Vec::new()
-            memory: vec![0, 3, 3, 4, 1, 5, 5, 5, 3, 6, 6, 6, 4, 8, 0, 0],
+            // memory: vec![0, 3, 3, 4, 1, 5, 5, 5, 3, 6, 6, 6, 4, 8, 0, 0],
+            memory: vec![2, 1, 1, 3, 4, 3, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 0, 0],
         }
     }
 
@@ -200,37 +219,89 @@ impl AntColony {
         }
     }
 
-    fn print_alignment(&self, ant: &Ant) {
+    fn scr_alignment(&self, ant: &Ant) -> f64 {
         let n_seqs = self.seqs.len();
         let n_arr = ant.memory.len() / n_seqs;
         let mut indx_iter = ant.memory.iter();
-        // let mut alignments = Vec::new();
-        for _ in 0..n_arr {
-            let mut indx_aux = vec![0; n_seqs];
-            let mut offset = vec![0; n_seqs];
-            let mut greatest: usize = 0;
-            
+        let mut alignments = vec![String::new(); n_seqs];
+        let mut indx_aux = vec![0; n_seqs];
+        let mut offset = vec![0; n_seqs];
+        let mut seqs = self.seqs.clone();
+
+        for x in 0..n_arr {
+            let mut greatest_offset = 0;
             for i in 0..n_seqs {
                 let indx = *indx_iter.next().unwrap();
-                offset[i] = indx - indx_aux[i];
-                indx_aux[i] = indx;
-                if greatest < indx {
-                    greatest = indx;
+                
+                offset[i] = if indx > 0 || x == 0 {
+                                indx - indx_aux[i]
+                            } else {
+                                1
+                            };
+                
+                if greatest_offset < offset[i] {
+                    greatest_offset = offset[i];
                 }
+
+                indx_aux[i] = indx;
             }
 
-            // for i in 0..n_seqs {
+            for i in 0..n_seqs {
+                // print!("{} - {} -> ", greatest_offset, offset[i]);
+                let n_dashes = greatest_offset - offset[i];
+                // print!("\"-\" = {}: ", n_dashes);
 
-            // }
+                let slice = if seqs[i].len() > 0 {
+                    let remnant = seqs[i].split_off(offset[i]);
+                    let slice = seqs[i].clone();
+                    seqs[i] = remnant;
+                    slice
+                } else {
+                    seqs[i].clone()
+                };
+                alignments[i].push_str(slice.as_str());
 
-            println!("{}: {:?} -> {:?}", greatest, indx_aux, offset);
+                for _ in 0..n_dashes {
+                    alignments[i].push_str("_");
+                }
+                // alignments[i].push_str(".");
+            }
+
         }
+        
+        let mut lngst_seq = 0;
+        for i in 0..n_seqs {
+            if lngst_seq < seqs[i].len() {
+                lngst_seq = seqs[i].len();
+            }
+            alignments[i].push_str(seqs[i].as_str());
+        }
+
+        for i in 0..n_seqs {
+            for _ in 0..(lngst_seq - seqs[i].len()) {
+                alignments[i].push_str("_");
+            }
+        }
+
+        for seq in &alignments {
+            println!("{}", seq);
+        }
+
+        let mut score = 0.0;
+        // for i in 0..n_seqs {
+        //     for j in i + 1..n_seqs {
+        //         score += get_hsp(alignments[i], alignments[j], match_scr, mism_scr, gap_scr);
+        //     }
+        // }
+
+        println!("Suma Pares: {}", score);
+        score
     }
 
     fn iterate(&mut self) {
         let ant = Ant::new();
         ant.print();
-        self.print_alignment(&ant);
+        let score = self.scr_alignment(&ant);
         println!("Hello world!");
     }
 }
