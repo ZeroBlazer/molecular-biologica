@@ -1,26 +1,39 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 #[derive(Debug)]
 struct Matrix {
-    elems: BTreeMap<String, BTreeMap<String, f32>>,
-    keys: BTreeSet<String>,
+    elems: Vec<Vec<f32>>,
+    keys: BTreeMap<String, usize>,
 }
 
 impl Matrix {
-    fn new() -> Matrix {
+    fn new(keys: &[&str]) -> Matrix {
+        let e_matrix = vec![vec![0.0; keys.len()]; keys.len()];
+        let mut k_indexes = BTreeMap::new();
+
+        for key in keys {
+            k_indexes.insert(key.to_string(), 0);
+        }
+
+        for (i, (_, index)) in k_indexes.iter_mut().enumerate() {
+            *index = i;
+        }
+
         Matrix {
-            elems: BTreeMap::new(),
-            keys: BTreeSet::new(),
+            elems: e_matrix,
+            keys: k_indexes,
         }
     }
 
     fn insert(&mut self, c1: &str, c2: &str, val: f32) {
-        let mut ins_map = self.elems
-            .entry(c1.to_string())
-            .or_insert_with(BTreeMap::new);
-        ins_map.insert(c2.to_string(), val);
-        self.keys.insert(c1.to_string());
-        self.keys.insert(c2.to_string());
+        let i1 = self.keys[c1];
+        let i2 = self.keys[c2];
+
+        if i1 < i2 {
+            self.elems[i1][i2] = val;
+        } else {
+            self.elems[i2][i1] = val;
+        }
     }
 
     fn len(&self) -> usize {
@@ -28,109 +41,91 @@ impl Matrix {
     }
 
     fn get_d(&self, c1: &str, c2: &str) -> &f32 {
-        match self.elems.get(c1) {
-            Some(map) => {
-                match map.get(c2) {
-                    Some(val) => val,
-                    None => &self.elems[c2][c1],
-                }
-            }
-            None => {
-                match self.elems.get(c2) {
-                    Some(map) => {
-                        match map.get(c1) {
-                            Some(val) => val,
-                            None => panic!("c1 wasn't found"),
-                        }
-                    }
-                    None => panic!("c2 wasn't found"),
-                }
-            }
+        let i1 = self.keys[c1];
+        let i2 = self.keys[c2];
+
+        if i1 < i2 {
+            &self.elems[i1][i2]
+        } else {
+            &self.elems[i2][i1]
         }
     }
 
     fn lowest_d(&self) -> (f32, String, String) {
-        let mut iter = self.keys.iter();
-        let mut key_1 = match iter.next() {
-            Some(val) => val,
-            None => panic!("No elements in matrix"),
-        };
+        let mut lowest = (99999.9, "".to_string(), "".to_string());
 
-        let mut lowest = (9999.9, key_1.clone(), key_1.clone());
-
-        for key_2 in iter {
-            let &d = self.get_d(key_1, key_2);
-
-            if lowest.0 > d {
-                lowest = (d, key_1.clone(), key_2.clone());
+        for key_1 in self.keys.keys() {
+            for key_2 in self.keys.keys() {
+                if key_1 != key_2 {
+                    let &d = self.get_d(key_1, key_2);
+                    if lowest.0 > d {
+                        lowest = (d, key_1.to_string(), key_2.to_string());
+                    }
+                }
             }
-
-            key_1 = key_2;
         }
 
         lowest
     }
 
-    fn join(&mut self, k1: &str, k2: &str) -> Matrix {
-        if !(self.keys.contains(k1) || self.keys.contains(k2)) {
-            panic!("Keys aren't in matrix");
+    fn join(&mut self, k1: String, k2: String) -> Matrix {
+        let mut st_keys = self.keys.clone();
+        st_keys.remove(&k1);
+        st_keys.remove(&k2);
+
+        let clone_keys = st_keys.clone();
+
+        let mut new_key = if k1 < k2 { k1.clone() } else { k2.clone() };
+        new_key.push_str(if k1 < k2 { k2.as_str() } else { k1.as_str() });
+
+        let new_ins_key = new_key.clone();
+
+        st_keys.insert(new_key, 0);
+        let ret_keys: Vec<&str> = st_keys.iter().map(|a| a.0.as_ref()).collect();
+        println!("{:?}", ret_keys);
+        let mut ret_m = Matrix::new(&ret_keys);
+
+        let clone_keys: Vec<&str> = clone_keys.iter().map(|a| a.0.as_ref()).collect();
+        for key_1 in &clone_keys {
+            for key_2 in &clone_keys {
+                ret_m.insert(key_1, key_2, *self.get_d(key_1, key_2));
+                // println!("{} <> {}", key_1, key_2);
+            }
+
+            let val_1 = *self.get_d(k1.as_ref(), key_1);
+            let val_2 = *self.get_d(k2.as_ref(), key_1);
+            ret_m.insert(new_ins_key.as_ref(), key_1, (val_1 + val_2) / 2.0);
         }
-        /********************************************************************/
-        let var1 = &self.elems[k1];
-        let var2 = &self.elems[k2];
-
-        println!("{:?} > {:?}", var1, var2);
-        /********************************************************************/
-        let d_12 = self.get_d(k1, k2) / 2.0;
-        let d_21 = self.get_d(k2, k1) / 2.0;
-        println!("D_{}{} / 2 = {}", k1, k2, d_12);
-        println!("D_{}{} / 2 = {}", k2, k1, d_21);
-        /********************************************************************/
-        let mut k = String::from(k1);
-        k.push_str(k2);
-        let mut elems = self.elems.clone();
-        elems.remove(k1);
-        elems.remove(k2);
-
-        let mut keys = self.keys.clone();
-        keys.remove(k1);
-        keys.remove(k2);
-        let rem_keys = keys.clone();
-
-        let mut ret_m = Matrix {
-            elems: elems,
-            keys: keys,
-        };
-
-        for key in rem_keys {
-            let val = self.get_d(k1, &key) + self.get_d(k2, &key) - self.get_d(k1, k2);
-            ret_m.insert(&k, &key, val / 2.0);
-        }
-
-        println!("{}", k);
 
         ret_m
     }
 
     fn print_matrix(&self) {
-        println!("{:#?}", self.elems);
+        for row in &self.elems {
+            println!("{:?}", row);
+        }
     }
 }
 
-fn upgma(input: &[(&str, &str, f32)]) {
-    let mut matrix = Matrix::new();
+fn upgma(keys: &[&str], input: &[(&str, &str, f32)]) {
+    let mut matrix = Matrix::new(keys);
 
     for &(c1, c2, val) in input {
         matrix.insert(c1, c2, val);
     }
 
     matrix.print_matrix();
-    let (_, key_1, key_2) = matrix.lowest_d();
-    println!("Joining: {} and {}", key_1, key_2);
-    matrix = matrix.join(&key_1, &key_2);
+
+    while matrix.len() > 2 {
+        let (_, key_1, key_2) = matrix.lowest_d();
+        println!("\nJoining: {} and {}", key_1, key_2);
+        matrix = matrix.join(key_1, key_2);
+        matrix.print_matrix();
+    }
 }
 
 fn main() {
+    let keys = vec!["A", "B", "C", "D", "E"];
     let input = vec![/*("A", "A", 0.0)0,*/
                      ("A", "B", 10.0),
                      ("A", "C", 12.0),
@@ -146,5 +141,5 @@ fn main() {
                      //  ("D", "D", 0.0),
                      ("D", "E", 13.0) /* ("E", "E", 0.0)*/];
 
-    upgma(&input);
+    upgma(&keys, &input);
 }
