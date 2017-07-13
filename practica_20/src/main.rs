@@ -108,6 +108,10 @@ impl Matrix {
         let mut elems = self.elems.clone();
         elems.remove(k1);
         elems.remove(k2);
+        for (_, val) in &mut elems {
+            val.remove(k1);
+            val.remove(k2);
+        }
 
         let mut keys = self.keys.clone();
         keys.remove(k1);
@@ -116,7 +120,7 @@ impl Matrix {
 
         let mut ret_m = Matrix {
             elems: elems,
-            keys: keys
+            keys: keys,
         };
 
         for key in rem_keys {
@@ -128,7 +132,9 @@ impl Matrix {
     }
 
     fn print_matrix(&self) {
-        println!("{:#?}", self.elems);
+        for (key, val) in &self.elems {
+            println!("{}: {:?}", key, val);
+        }
     }
 
     fn print_s_calculations(&self) {
@@ -149,9 +155,11 @@ fn neighbor_joining(input: &[(char, char, u32)]) {
 
     while matrix.len() - 2 > 0 {
         matrix.print_matrix();
+        println!("");
         matrix.print_s_calculations();
+        println!("");
         let (_, key_1, key_2) = matrix.lowest_m();
-        println!("Joining: {} and {}", key_1, key_2);
+        println!("\nJoining: {} and {}", key_1, key_2);
         matrix = matrix.join(&key_1, &key_2, &char::from(letter));
         letter += 1;
     }
