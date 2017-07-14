@@ -1,5 +1,10 @@
 fn get_sequences(path: &str) -> Vec<String> {
-    Vec::new()
+    vec!["PPGVKSDCAS".to_string(),
+         "PADGVKDCAS".to_string(),
+         "PPDGKSDS".to_string(),
+         "GADGKDCCS".to_string(),
+         "GADGKDCAS".to_string()]
+    // Vec::new()
 }
 
 fn mult_seq_alignment(input: &[String]) {
