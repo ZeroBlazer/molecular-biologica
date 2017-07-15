@@ -212,7 +212,7 @@ pub fn align_seqs(mut sec_1: String, mut sec_2: String) -> Vec<String> {
     vec![sec_1, sec_2]
 }
 
-fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
+pub fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
     /********* Initialize sequences **********/
     seq = String::from("_") + seq.as_ref();
 
@@ -341,7 +341,7 @@ fn align_seqs_seq(mut seq_vec: Vec<String>, mut seq: String) -> Vec<String> {
     seq_vec
 }
 
-fn align_alignments(mut seq_vec1: Vec<String>, mut seq_vec2: Vec<String>) -> Vec<String> {
+pub fn align_alignments(mut seq_vec1: Vec<String>, mut seq_vec2: Vec<String>) -> Vec<String> {
     /********* Initialize sequences **********/
     for sec in seq_vec1.iter_mut() {
         *sec = String::from("_") + sec.as_ref();
