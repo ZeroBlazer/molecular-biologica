@@ -150,7 +150,7 @@ impl Matrix {
     }
 
     fn keys(&self) -> Vec<usize> {
-        self.keys.iter().map(|x| x.clone()).collect()
+        self.keys.iter().cloned().collect()
     }
 }
 
@@ -169,7 +169,7 @@ impl GuideTree {
     }
 
     fn join(&mut self, k1: &usize, k2: &usize, kj: &usize) {
-        let mut join_align: Vec<String>;
+        let join_align: Vec<String>;
         {
             let aligns_1 = &self.aligns[k1];
             let aligns_2 = &self.aligns[k2];
@@ -228,12 +228,6 @@ fn get_sequences(path: &str) -> Vec<String> {
     }
 
     ret_vec
-
-    // vec!["ACTCATGC".to_string(),
-    //      "AGCCATAC".to_string(),
-    //      "GCTATAC".to_string(),
-    //      "GAACATAGT".to_string(),
-    //      "ACGTCCTGT".to_string()]
 }
 
 fn mult_seq_alignment(input: &[String]) {
@@ -286,5 +280,6 @@ fn mult_seq_alignment(input: &[String]) {
 
 fn main() {
     let input = get_sequences("input/MSA_16507.txt");
+    // let input = get_sequences("input/test.txt");
     mult_seq_alignment(&input);
 }
