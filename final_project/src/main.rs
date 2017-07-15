@@ -147,28 +147,6 @@ impl Matrix {
     }
 }
 
-fn neighbor_joining(input: &[(char, char, u32)]) {
-    let mut matrix = Matrix::new();
-
-    for &(c1, c2, val) in input {
-        matrix.insert(&c1, &c2, val);
-    }
-
-    let mut letter: u8 = 49; // 85; // 'U'
-
-    while matrix.len() - 2 > 0 {
-        matrix.print_matrix();
-        println!("");
-        matrix.print_s_calculations();
-        println!("");
-        let (_, key_1, key_2) = matrix.lowest_m();
-        println!("\nJoining: {} and {}", key_1, key_2);
-        matrix = matrix.join(&key_1, &key_2, &char::from(letter));
-        letter += 1;
-    }
-    matrix.print_matrix();
-}
-
 fn distance_score(align_1: &str, align_2: &str) -> f64 {
     let mut x_count = 0.0;
     let mut y_count = 0.0;
@@ -203,17 +181,35 @@ fn get_sequences(path: &str) -> Vec<String> {
     // Vec::new()
 }
 
-fn mult_seq_alignment(input: &[String]) {
+fn mult_seq_alignment(input: &[String]) { 
+    let mut matrix = Matrix::new();
+    /****************************************************/
     for (i, seq_1) in input.iter().enumerate() {
         let mut j = i;
         for seq_2 in input.iter().skip(i + 1) {
             j += 1;
             if i != j {
                 let aligns = align_seqs(seq_1.clone(), seq_2.clone());
+                matrix.insert(i, j, distance_score(&aligns[0], &aligns[1]));
                 println!("{}-{} > {:#?} - {}", i, j, aligns, distance_score(&aligns[0], &aligns[1]));
             }
         }
     }
+    /***************** Neighbor joining *****************/
+    let mut letter: u8 = 49; // 85; // 'U'
+
+    while matrix.len() - 2 > 0 {
+        matrix.print_matrix();
+        println!("");
+        matrix.print_s_calculations();
+        println!("");
+        let (_, key_1, key_2) = matrix.lowest_m();
+        println!("\nJoining: {} and {}", key_1, key_2);
+        matrix = matrix.join(&key_1, &key_2, &char::from(letter));
+        letter += 1;
+    }
+    matrix.print_matrix();
+
     println!("Hello, world!");
 }
 
