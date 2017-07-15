@@ -102,7 +102,7 @@ fn print_matrix<T>(seq_vec1: &Vec<String>, seq_vec2: &Vec<String>, mtrx: &Vec<Ve
     println!("");
 }
 
-fn align_seqs(mut sec_1: String, mut sec_2: String) -> Vec<String> {
+pub fn align_seqs(mut sec_1: String, mut sec_2: String) -> Vec<String> {
     sec_1 = String::from("_") + sec_1.as_ref();
     sec_2 = String::from("_") + sec_2.as_ref();
     /********* Initialize matrix **********/
