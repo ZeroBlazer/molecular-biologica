@@ -193,6 +193,10 @@ impl GuideTree {
 
         self.aligns.insert(*kj, join_align);
     }
+
+    fn alignments(&self, k: &usize) -> &Vec<String> {
+        &self.aligns[k]
+    }
 }
 
 fn distance_score(align_1: &str, align_2: &str) -> f64 {
@@ -274,7 +278,11 @@ fn mult_seq_alignment(input: &[String]) {
     g_tree.join(&final_keys[0], &final_keys[1], &letter);
     println!("{:#?}", g_tree);
     /****************************************************/
-
+    let mut file = File::create("EPuma_Final_Alignments.txt").expect("Couldn't open write file");
+    for align in g_tree.alignments(&letter) {
+        write!(file, "{}\n", align).expect("Couldn't write in file");
+    }
+    /****************************************************/
     println!("Hello, world!");
 }
 
