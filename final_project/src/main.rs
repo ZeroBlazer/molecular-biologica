@@ -511,7 +511,8 @@ impl GuideTree {
     }
 
     fn join(&mut self, k1: &usize, k2: &usize, kj: &usize) {
-        let join_align: Vec<String>;
+        /****************************************************************************/
+        let mut join_align: Vec<String>;
         {
             let aligns_1 = &self.aligns[k1];
             let aligns_2 = &self.aligns[k2];
@@ -532,7 +533,16 @@ impl GuideTree {
                 align_alignments(aligns_1.clone(), aligns_2.clone())
             };
         }
-
+        let mut size = 0;
+        for seq in &join_align {
+            if seq.len() > size {
+                size = seq.len();
+            }
+        }
+        /****************************************************************************/
+        let mut solver = Solver::new(4, size, 50, 0.9, 6, 0.2);
+        join_align = solver.evolve(join_align).clone();
+        /****************************************************************************/
         self.aligns.insert(*kj, join_align);
     }
 
@@ -620,23 +630,23 @@ fn mult_seq_alignment(input: &[String]) {
     g_tree.join(&final_keys[0], &final_keys[1], &letter);
     println!("{:#?}", g_tree);
     /****************************************************/
-    let mut solver = Solver::new(8, 823, 100, 0.9, 6, 0.2);
+    // let mut solver = Solver::new(8, 823, 100, 0.9, 6, 0.2);
     // let mut solver = Solver::new(8, 9, 100, 0.9, 6, 0.2);
     // solver.evolve(g_tree.alignments(&letter).clone());
     /****************************************************/
     let mut file = File::create("EPuma_Final_Alignments.txt").expect("Couldn't open write file");
-    // for align in g_tree.alignments(&letter) {
-    //     write!(file, "{}\n", align).expect("Couldn't write in file");
-    // }
-    for align in solver.evolve(g_tree.alignments(&letter).clone()) {
+    for align in g_tree.alignments(&letter) {
         write!(file, "{}\n", align).expect("Couldn't write in file");
     }
+    // for align in solver.evolve(g_tree.alignments(&letter).clone()) {
+    //     write!(file, "{}\n", align).expect("Couldn't write in file");
+    // }
     /****************************************************/
     println!("Hello, world!");
 }
 
 fn main() {
-    let input = get_sequences("input/MSA_16507.txt");
-    // let input = get_sequences("input/test.txt");
+    // let input = get_sequences("input/MSA_16507.txt");
+    let input = get_sequences("input/test.txt");
     mult_seq_alignment(&input);
 }
