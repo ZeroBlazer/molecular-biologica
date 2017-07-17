@@ -547,20 +547,25 @@ impl GuideTree {
         //     };
         // }
         /****************************************************************************/
-        let mut join_align = self.aligns[k1].clone();
-        let mut alig_2 = self.aligns[k2].clone();
+        let mut join_align: Vec<String>;
+        if self.aligns[k1].len() == 1 && self.aligns[k2].len() == 1 {
+            join_align = align_seqs(self.aligns[k1][0].clone(), self.aligns[k2][0].clone());
+        } else {
+            join_align = self.aligns[k1].clone();
+            let mut alig_2 = self.aligns[k2].clone();
 
-        join_align.append(&mut alig_2);
+            join_align.append(&mut alig_2);
 
-        let mut size = 0;
-        for seq in &join_align {
-            if seq.len() > size {
-                size = seq.len();
+            let mut size = 0;
+            for seq in &join_align {
+                if seq.len() > size {
+                    size = seq.len();
+                }
             }
+            /****************************************************************************/
+            let mut solver = Solver::new(6, size, 100, 0.9, 6, 0.2);
+            join_align = solver.evolve(join_align).clone();
         }
-        /****************************************************************************/
-        let mut solver = Solver::new(4, size, 150, 0.9, 6, 0.2);
-        join_align = solver.evolve(join_align).clone();
         /****************************************************************************/
         self.aligns.insert(*kj, join_align);
     }
@@ -624,7 +629,8 @@ fn mult_seq_alignment(input: &[String]) {
         }
     }
     /******************** Guide Tree ********************/
-    let mut g_tree = GuideTree::new();println!("Hello, world!");
+    let mut g_tree = GuideTree::new();
+    println!("Hello, world!");
 
     for (i, seq) in input.iter().enumerate() {
         g_tree.insert(&i, seq.clone());
@@ -668,7 +674,9 @@ fn main() {
     let input = get_sequences("input/MSA_16507.txt");
     // let input = get_sequences("input/test.txt");
     mult_seq_alignment(&input);
-    println!("Ideal SP = {}", sum_pairs(&get_sequences("ideal_alignment.txt")));
-    println!("Result SP = {}", sum_pairs(&get_sequences("EPuma_Final_Alignments.txt")));
+    println!("Ideal SP = {}",
+             sum_pairs(&get_sequences("ideal_alignment.txt")));
+    println!("Result SP = {}",
+             sum_pairs(&get_sequences("EPuma_Final_Alignments.txt")));
     println!("SP = {}", sum_pairs(&get_sequences("gapsy_alignment.txt")));
 }
