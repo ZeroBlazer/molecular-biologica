@@ -5,3 +5,4 @@ authors = ["Elías Puma <elpumitaelias@gmail.com>"]
 
 [dependencies]
 alignments = { path = "../libs/alignments/" }
+rand = "0.3"
