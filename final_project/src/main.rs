@@ -20,6 +20,18 @@ fn get_hsp(w1: &str, w2: &str, match_scr: i32, mism_scr: i32, gap_scr: i32) -> i
     hsp
 }
 
+fn sum_pairs(aligns: &[String]) -> i32 {
+    let mut fitness = 0;
+    let size = aligns.len();
+    for i in 0..size {
+        for j in i + 1..size {
+            fitness += get_hsp(&aligns[i], &aligns[j], 3, 1, 0);
+        }
+    }
+
+    fitness
+}
+
 fn ver_crossover(s1: &mut String, s2: &mut String, crosspoint: usize) {
     let post_s1 = s1.split_off(crosspoint);
 
@@ -95,7 +107,7 @@ impl Cromosome {
         let mut fitness = 0;
         let size = self.genotype.len();
         for i in 0..size {
-            for j in i+1..size {
+            for j in i + 1..size {
                 fitness += get_hsp(&self.genotype[i], &self.genotype[j], 3, 1, 0);
             }
         }
@@ -269,7 +281,7 @@ impl Population {
         for i in 0..self.pob_size {
             self.population
                 .push(Cromosome {
-                        //   size: new_population[i].1.len(),
+                          //   size: new_population[i].1.len(),
                           size: self.crom_size,
                           genotype: new_population[i].1.clone(),
                       });
@@ -325,8 +337,9 @@ impl Solver {
             self.population.ruleta();
             let pob_size = self.population.pob_size / 2;
             for _ in 0..pob_size {
-            self.population.crossover(self.crossover_prob, self.crossover_point);
-            self.population.mutate(self.mutation_prob);
+                self.population
+                    .crossover(self.crossover_prob, self.crossover_point);
+                self.population.mutate(self.mutation_prob);
             }
             self.population.selection();
         }
@@ -512,27 +525,33 @@ impl GuideTree {
 
     fn join(&mut self, k1: &usize, k2: &usize, kj: &usize) {
         /****************************************************************************/
-        let mut join_align: Vec<String>;
-        {
-            let aligns_1 = &self.aligns[k1];
-            let aligns_2 = &self.aligns[k2];
+        // let mut join_align: Vec<String>;
+        // {
+        //     let aligns_1 = &self.aligns[k1];
+        //     let aligns_2 = &self.aligns[k2];
 
-            join_align = if aligns_1.len() == 1 {
-                if aligns_2.len() == 1 {
-                    align_seqs(aligns_1[0].clone(), aligns_2[0].clone())
-                } else {
-                    align_seqs_seq(aligns_2.clone(), aligns_1[0].clone())
-                }
-            } else if aligns_2.len() == 1 {
-                if aligns_1.len() == 1 {
-                    align_seqs(aligns_1[0].clone(), aligns_2[0].clone())
-                } else {
-                    align_seqs_seq(aligns_1.clone(), aligns_2[0].clone())
-                }
-            } else {
-                align_alignments(aligns_1.clone(), aligns_2.clone())
-            };
-        }
+        //     join_align = if aligns_1.len() == 1 {
+        //         if aligns_2.len() == 1 {
+        //             align_seqs(aligns_1[0].clone(), aligns_2[0].clone())
+        //         } else {
+        //             align_seqs_seq(aligns_2.clone(), aligns_1[0].clone())
+        //         }
+        //     } else if aligns_2.len() == 1 {
+        //         if aligns_1.len() == 1 {
+        //             align_seqs(aligns_1[0].clone(), aligns_2[0].clone())
+        //         } else {
+        //             align_seqs_seq(aligns_1.clone(), aligns_2[0].clone())
+        //         }
+        //     } else {
+        //         align_alignments(aligns_1.clone(), aligns_2.clone())
+        //     };
+        // }
+        /****************************************************************************/
+        let mut join_align = self.aligns[k1].clone();
+        let mut alig_2 = self.aligns[k2].clone();
+
+        join_align.append(&mut alig_2);
+
         let mut size = 0;
         for seq in &join_align {
             if seq.len() > size {
@@ -540,7 +559,7 @@ impl GuideTree {
             }
         }
         /****************************************************************************/
-        let mut solver = Solver::new(4, size, 50, 0.9, 6, 0.2);
+        let mut solver = Solver::new(4, size, 150, 0.9, 6, 0.2);
         join_align = solver.evolve(join_align).clone();
         /****************************************************************************/
         self.aligns.insert(*kj, join_align);
@@ -605,7 +624,7 @@ fn mult_seq_alignment(input: &[String]) {
         }
     }
     /******************** Guide Tree ********************/
-    let mut g_tree = GuideTree::new();
+    let mut g_tree = GuideTree::new();println!("Hello, world!");
 
     for (i, seq) in input.iter().enumerate() {
         g_tree.insert(&i, seq.clone());
@@ -649,4 +668,7 @@ fn main() {
     let input = get_sequences("input/MSA_16507.txt");
     // let input = get_sequences("input/test.txt");
     mult_seq_alignment(&input);
+    println!("Ideal SP = {}", sum_pairs(&get_sequences("ideal_alignment.txt")));
+    println!("Result SP = {}", sum_pairs(&get_sequences("EPuma_Final_Alignments.txt")));
+    println!("SP = {}", sum_pairs(&get_sequences("gapsy_alignment.txt")));
 }
