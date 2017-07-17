@@ -702,8 +702,8 @@ fn mult_seq_alignment(input: &[String]) {
 }
 
 fn main() {
-    // let input = get_sequences("input/MSA_16507.txt");
-    let input = get_sequences("input/test.txt");
+    let input = get_sequences("input/MSA_16507.txt");
+    // let input = get_sequences("input/test.txt");
     mult_seq_alignment(&input);
     println!("ClustalW SP = {}",
              sum_pairs(&get_sequences("clustalw_alignment.txt")));
