@@ -316,7 +316,7 @@ impl Solver {
         }
     }
 
-    pub fn evolve(&mut self, input: Vec<String>) {
+    pub fn evolve(&mut self, input: Vec<String>) -> &Vec<String> {
         self.population.generate(&input);
 
         for i in 0..self.iterations {
@@ -335,6 +335,8 @@ impl Solver {
         self.population.eval();
 
         println!("\nFin del Proceso");
+
+        &self.population.population[0].genotype
     }
 }
 
@@ -617,16 +619,19 @@ fn mult_seq_alignment(input: &[String]) {
     let final_keys = matrix.keys();
     g_tree.join(&final_keys[0], &final_keys[1], &letter);
     println!("{:#?}", g_tree);
-    
-    
+    /****************************************************/
+    let mut solver = Solver::new(8, 823, 100, 0.9, 6, 0.2);
+    // let mut solver = Solver::new(8, 9, 100, 0.9, 6, 0.2);
+    // solver.evolve(g_tree.alignments(&letter).clone());
     /****************************************************/
     let mut file = File::create("EPuma_Final_Alignments.txt").expect("Couldn't open write file");
-    for align in g_tree.alignments(&letter) {
+    // for align in g_tree.alignments(&letter) {
+    //     write!(file, "{}\n", align).expect("Couldn't write in file");
+    // }
+    for align in solver.evolve(g_tree.alignments(&letter).clone()) {
         write!(file, "{}\n", align).expect("Couldn't write in file");
     }
     /****************************************************/
-    let mut solver = Solver::new(8, 9, 100, 0.9, 6, 0.2);
-    solver.evolve(g_tree.alignments(&letter).clone());
     println!("Hello, world!");
 }
 
