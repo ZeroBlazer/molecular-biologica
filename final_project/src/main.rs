@@ -82,24 +82,53 @@ pub struct Cromosome {
 }
 
 impl Cromosome {
-    pub fn new(size: usize, input: &[String]) -> Cromosome {
-        let mut st_gen = Vec::new();
-        for align in input.iter() {
-            st_gen.push(align.clone());
-        }
+    pub fn new(size: usize, input_1: &[String], input_2: &[String]) -> Cromosome {
+        let i1_len = input_1[0].len();
+        let i2_len = input_2[0].len();
+        let gt_2_cond = i1_len > i2_len;
+        let diff = if gt_2_cond {
+            i1_len - i2_len
+        } else {
+            i2_len - i1_len
+        };
+
+        let mut l_seq_vec: Vec<String> = if gt_2_cond {
+            input_2.iter().map(|x| x.clone()).collect()
+        } else {
+            input_1.iter().map(|x| x.clone()).collect()
+        };
+
+        let mut g_seq_vec: Vec<String> = if gt_2_cond {
+            input_1.iter().map(|x| x.clone()).collect()
+        } else {
+            input_2.iter().map(|x| x.clone()).collect()
+        };
 
         let mut rng = thread_rng();
-        for align in &mut st_gen {
-            let mut current_len = align.len();
-            while current_len < size {
+        let mut current_len: usize;
+        while {
+                  current_len = l_seq_vec[0].len();
+                  current_len < size
+              } {
+            for align in &mut l_seq_vec {
                 align.insert_str(rng.gen_range(0, current_len), "_");
-                current_len = align.len();
             }
         }
 
+        l_seq_vec.append(&mut g_seq_vec);
+
+        // let mut rng = thread_rng();
+        // for align in &mut st_gen {
+        //     let mut current_len = align.len();
+        //     while current_len < size {
+        //         align.insert_str(rng.gen_range(0, current_len), "_");
+        //         current_len = align.len();
+        //     }
+        // }
+
         Cromosome {
             size: size,
-            genotype: st_gen,
+            genotype: l_seq_vec,
         }
     }
 
@@ -157,11 +186,11 @@ impl Population {
         }
     }
 
-    pub fn generate(&mut self, input: &[String]) {
+    pub fn generate(&mut self, input_1: &[String], input_2: &[String]) {
         println!("\nGenerando Población inicial");
 
         for _ in 0..self.pob_size {
-            let crom = Cromosome::new(self.crom_size, input);
+            let crom = Cromosome::new(self.crom_size, input_1, input_2);
             self.population.push(crom);
         }
 
@@ -328,8 +357,8 @@ impl Solver {
         }
     }
 
-    pub fn evolve(&mut self, input: Vec<String>) -> &Vec<String> {
-        self.population.generate(&input);
+    pub fn evolve(&mut self, input_1: Vec<String>, input_2: Vec<String>) -> &Vec<String> {
+        self.population.generate(&input_1, &input_2);
 
         for i in 0..self.iterations {
             println!("\nIteración: {}", i);
@@ -551,20 +580,22 @@ impl GuideTree {
         if self.aligns[k1].len() == 1 && self.aligns[k2].len() == 1 {
             join_align = align_seqs(self.aligns[k1][0].clone(), self.aligns[k2][0].clone());
         } else {
-            join_align = self.aligns[k1].clone();
-            let mut alig_2 = self.aligns[k2].clone();
+            let alig_1 = self.aligns[k1].clone();
+            let alig_2 = self.aligns[k2].clone();
 
-            join_align.append(&mut alig_2);
+            // join_align.append(&mut alig_2);
 
             let mut size = 0;
-            for seq in &join_align {
-                if seq.len() > size {
-                    size = seq.len();
-                }
+            if alig_1[0].len() > size {
+                size = alig_1[0].len();
             }
+            if alig_2[0].len() > size {
+                size = alig_2[0].len();
+            }
+
             /****************************************************************************/
-            let mut solver = Solver::new(6, size, 100, 0.9, 6, 0.2);
-            join_align = solver.evolve(join_align).clone();
+            let mut solver = Solver::new(20, size, 50, 0.9, size / 2, 0.2);
+            join_align = solver.evolve(alig_1, alig_2).clone();
         }
         /****************************************************************************/
         self.aligns.insert(*kj, join_align);
@@ -671,12 +702,15 @@ fn mult_seq_alignment(input: &[String]) {
 }
 
 fn main() {
-    let input = get_sequences("input/MSA_16507.txt");
-    // let input = get_sequences("input/test.txt");
+    // let input = get_sequences("input/MSA_16507.txt");
+    let input = get_sequences("input/test.txt");
     mult_seq_alignment(&input);
-    println!("Ideal SP = {}",
-             sum_pairs(&get_sequences("ideal_alignment.txt")));
+    println!("ClustalW SP = {}",
+             sum_pairs(&get_sequences("clustalw_alignment.txt")));
+    println!("Kalign SP = {}",
+             sum_pairs(&get_sequences("kalign_alignment.txt")));
+    println!("Gapsy SP = {}",
+             sum_pairs(&get_sequences("gapsy_alignment.txt")));
     println!("Result SP = {}",
              sum_pairs(&get_sequences("EPuma_Final_Alignments.txt")));
-    println!("SP = {}", sum_pairs(&get_sequences("gapsy_alignment.txt")));
 }
