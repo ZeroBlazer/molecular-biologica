@@ -703,14 +703,15 @@ fn mult_seq_alignment(input: &[String]) {
 
 fn main() {
     // let input = get_sequences("input/MSA_16507.txt");
-    let input = get_sequences("input/test2.txt");
+    let input = get_sequences("input/test_input");
+    // let input = get_sequences("input/test2.txt");
     mult_seq_alignment(&input);
     println!("ClustalW SP = {}",
-             sum_pairs(&get_sequences("clustalw_alignment.txt")));
+             sum_pairs(&get_sequences("clustalw_align")));
     println!("Kalign SP = {}",
-             sum_pairs(&get_sequences("kalign_alignment.txt")));
-    println!("Gapsy SP = {}",
-             sum_pairs(&get_sequences("gapsy_alignment.txt")));
+             sum_pairs(&get_sequences("kalign_align")));
+    // println!("Gapsy SP = {}",
+    //          sum_pairs(&get_sequences("gapsy_alignment.txt")));
     println!("Result SP = {}",
              sum_pairs(&get_sequences("EPuma_Final_Alignments.txt")));
 }
